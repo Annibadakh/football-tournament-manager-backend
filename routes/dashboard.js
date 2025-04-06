@@ -4,7 +4,7 @@ const { getDashboard } = require("../controllers/dashboardController");
 
 const router = express.Router();
 
-router.get("/dashboard", authenticate("admin"), getDashboard);
+router.get("/dashboard", authenticate(["admin", "captain", "scorer"]), getDashboard);
 
 module.exports = router;
 

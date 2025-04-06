@@ -62,4 +62,32 @@ const getTeamByuuid = async (req, res) => {
   }
 };
 
-module.exports = {addTeam, getTeamsByTournament, getTeamById, getTeamByuuid};
+const updateApprovalStatus = async (req, res) => {
+  const { uuid } = req.params;
+  const { isApproved } = req.body;
+
+  if (typeof isApproved !== 'boolean') {
+    return res.status(400).json({ message: "isApproved must be a boolean" });
+  }
+
+  try {
+
+    const result = await Team.findOne({
+      where: {uuid: uuid},
+    });
+    if(result){
+      result.isApproved = isApproved;
+      result.save();
+      res.status(200).json({ message: "Approval status updated successfully" });
+    }
+    else{
+      res.status(404).json({message:"Team not found"});
+    }
+
+  } catch (error) {
+    console.error("Error updating approval:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+module.exports = {addTeam, getTeamsByTournament, getTeamById, getTeamByuuid, updateApprovalStatus};

@@ -42,6 +42,14 @@ const Team = sequelize.define("Team", {
     type: DataTypes.INTEGER,
     defaultValue: 0,
   },
+  goalsScored: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  },
+  goalsConceded: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+  },
 });
 
 // sequelize.sync()

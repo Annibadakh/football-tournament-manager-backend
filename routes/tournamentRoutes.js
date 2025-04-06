@@ -4,6 +4,6 @@ const { createTournament, getTournament } = require("../controllers/tournamentCo
 const   router = express.Router();
 
 router.post("/create-tournament", authenticate("admin"), createTournament);
-router.get("/all", authenticate("admin"), getTournament);
+router.get("/all", getTournament);
 
 module.exports = router;
