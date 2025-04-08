@@ -8,6 +8,7 @@ const dashboardRoutes = require("./routes/dashboard");
 const tournamentRoutes = require("./routes/tournamentRoutes");
 const teamRoutes = require("./routes/teamRoutes");
 const playerRoutes = require("./routes/playerRoutes");
+const matchRoutes = require("./routes/matchesRoutes");
 
 const path = require("path");
 
@@ -39,10 +40,13 @@ app.use("/api", dashboardRoutes);
 app.use("/api/tournament", tournamentRoutes);
 app.use("/api/team", teamRoutes);
 app.use("/api/player", playerRoutes);
+app.use('/api/match', matchRoutes);
 
-app.use((req, res, next) => {
-  res.status(404).json({ error: "Route not found" });
+
+app.get('/', (req, res) => {
+  res.send("from server side");
 });
+
 
 
 app.listen(PORT, async () => {

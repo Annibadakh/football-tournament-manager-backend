@@ -1,4 +1,4 @@
-const Tournament = require("../models/Tournament");
+const Tournament = require("../models/tournament");
 
 const createTournament = async (req, res) => {
   try {

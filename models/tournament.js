@@ -57,9 +57,9 @@ const Tournament = sequelize.define("Tournament", {
   },
 });
 
-// sequelize.sync()
-//   .then(() => console.log("tournament table created"))
-//   .catch((err) => console.error("Error:", err));
+sequelize.sync()
+  .then(() => console.log("tournament table created"))
+  .catch((err) => console.error("Error:", err));
 
 module.exports = Tournament;
   
