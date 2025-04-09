@@ -18,8 +18,8 @@ const User = sequelize.define("User", {
   contactNum: { type: DataTypes.STRING, allowNull: false },
 });
 
-sequelize.sync()
-  .then(() => console.log("User table created"))
-  .catch((err) => console.error("Error:", err));
+// sequelize.sync()
+//   .then(() => console.log("User table created"))
+//   .catch((err) => console.error("Error:", err));
 
 module.exports = User;

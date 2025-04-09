@@ -35,9 +35,9 @@ const Player = sequelize.define("Player", {
     allowNull: false,
   },
 });
-sequelize.sync()
-  .then(() => console.log("player table created"))
-  .catch((err) => console.error("Error:", err));
+// sequelize.sync()
+//   .then(() => console.log("player table created"))
+//   .catch((err) => console.error("Error:", err));
 
 
 module.exports = Player;

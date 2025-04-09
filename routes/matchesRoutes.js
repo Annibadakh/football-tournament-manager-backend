@@ -1,12 +1,16 @@
 const express = require('express');
 const authenticate = require("../middleware/authMiddleware");
 const router = express.Router();
-const {addMatch, getMatchesByTournament} = require('../controllers/matchController');
+const {addMatch, getMatchesByTournament, getMatchesById, updateStatus, updateScore, updateResult} = require('../controllers/matchController');
 
-// POST route to add a match
 router.post('/add-match', authenticate(["admin"]), addMatch);
 
-// GET route to get all matches of a tournament (optional)
 router.get('/get-matches/:tournamentId', getMatchesByTournament);
+router.get('/get-match/:id', getMatchesById);
+
+router.post('/update-status/:id', updateStatus);
+router.post('/update-result/:id', updateResult);
+
+router.post('/update-score', updateScore);
 
 module.exports = router;

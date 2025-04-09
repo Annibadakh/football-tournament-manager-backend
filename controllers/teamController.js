@@ -38,7 +38,9 @@ const getTeamsByTournament = async (req, res) => {
 
 const getTeamById = async (req, res) => {
   try {
-    const team = await Team.findByPk(req.params.id);
+    const team = await Team.findOne({
+      where: {uuid: req.params.id}
+    });
     if (!team) return res.status(404).json({ message: "Team not found" });
     res.json(team);
   } catch (err) {

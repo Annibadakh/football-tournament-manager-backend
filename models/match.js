@@ -49,7 +49,7 @@ const Match = sequelize.define('Match', {
       defaultValue: 'undecided'
     },
     winnerTeamId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: true,
     },
     totalGoalsTeam1: {
@@ -62,9 +62,9 @@ const Match = sequelize.define('Match', {
     }
   });
 
-sequelize.sync()
-  .then(() => console.log("match table created"))
-  .catch((err) => console.error("Error:", err));
+// sequelize.sync()
+//   .then(() => console.log("match table created"))
+//   .catch((err) => console.error("Error:", err));
 
 
 module.exports = Match;
