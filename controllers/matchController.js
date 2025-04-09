@@ -31,6 +31,19 @@ const getMatchesByTournament = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch matches', error });
   }
 };
+const getMatches = async (req, res) => {
+
+  try {
+    const matches = await Match.findAll({
+      order: [['startDate', 'ASC']]
+    });
+
+    res.status(200).json(matches);
+  } catch (error) {
+    console.error('Error fetching matches:', error);
+    res.status(500).json({ message: 'Failed to fetch matches', error });
+  }
+};
 
 const getMatchesById = async (req, res) => {
   const { id } = req.params;
@@ -183,4 +196,4 @@ const updateResult = async (req, res) => {
 };
 
 
-module.exports = {addMatch, getMatchesByTournament, getMatchesById, updateStatus, updateScore, updateResult};
+module.exports = {addMatch, getMatchesByTournament, getMatches, getMatchesById, updateStatus, updateScore, updateResult};

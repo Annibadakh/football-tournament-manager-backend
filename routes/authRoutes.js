@@ -44,7 +44,7 @@ router.post("/login", async (req, res) => {
     if(role !== user.role){
       return res.status(403).json({ message: "User role not match !!" });
     };
-    const token = jwt.sign({ id: user.id, role: user.role }, SECRET_KEY, { expiresIn: "30m" });
+    const token = jwt.sign({ id: user.id, role: user.role }, SECRET_KEY, { expiresIn: "60m" });
     res.status(200).json({ token, role: user.role, email: user.email, uuid: user.uuid, userName: user.name });
   } catch (error) {
     res.status(500).json({ message: "Server error !!", error });
