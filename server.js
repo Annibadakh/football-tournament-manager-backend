@@ -9,6 +9,7 @@ const tournamentRoutes = require("./routes/tournamentRoutes");
 const teamRoutes = require("./routes/teamRoutes");
 const playerRoutes = require("./routes/playerRoutes");
 const matchRoutes = require("./routes/matchesRoutes");
+const operationRoutes = require('./routes/operationRoutes');
 
 const path = require("path");
 
@@ -41,6 +42,7 @@ app.use("/api/tournament", tournamentRoutes);
 app.use("/api/team", teamRoutes);
 app.use("/api/player", playerRoutes);
 app.use('/api/match', matchRoutes);
+app.use('/api/operations', operationRoutes);
 
 
 app.get('/', (req, res) => {

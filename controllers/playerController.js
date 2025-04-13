@@ -26,5 +26,18 @@ const getPlayersByTeam = async (req, res) => {
     res.status(500).json({ error: "Something went wrong" });
   }
 };
+const getTopScorers = async (req, res) => {
+  try {
+    const topScorers = await Player.findAll({
+      order: [["totalScore", "DESC"]],
+      limit: 3,
+    });
+    res.status(200).json(topScorers);
+  } catch (error) {
+    console.error("Error fetching top scorers:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 
-module.exports = {addPlayer, getPlayersByTeam};
+
+module.exports = {addPlayer, getPlayersByTeam, getTopScorers};

@@ -5,16 +5,36 @@ const MatchPlayer = require('../models/MatchPlayer'); // adjust the path as need
 
 // Add a match
 const addMatch = async (req, res) => {
-  const { tournamentId, team1Id, team2Id, startDate, startTime, halfTime, breakTime } = req.body;
+  const {
+    tournamentId,
+    team1Id,
+    team2Id,
+    startDate,
+    startTime,
+    halfTime,
+    breakTime,
+    stage, // ✅ New field added
+  } = req.body;
 
   try {
-    const match = await Match.create({tournamentId, team1Id, team2Id, startDate, startTime, halfTime, breakTime});
+    const match = await Match.create({
+      tournamentId,
+      team1Id,
+      team2Id,
+      startDate,
+      startTime,
+      halfTime,
+      breakTime,
+      stage, // ✅ Save stage value
+    });
+
     res.status(201).json({ message: 'Match added successfully', match });
   } catch (error) {
     console.error('Error adding match:', error);
     res.status(500).json({ message: 'Failed to add match', error });
   }
 };
+
 
 const getMatchesByTournament = async (req, res) => {
   const { tournamentId } = req.params;
@@ -108,7 +128,9 @@ const updateScore = async (req, res) => {
     
     if (match.team1Id.toString() === scoreId.toString()) {
       match.totalGoalsTeam1 = (match.totalGoalsTeam1) + change;
-    };
+    } else if(match.team2Id.toString() === scoreId.toString()){
+      match.totalGoalsTeam2 = (match.totalGoalsTeam2) + change;
+    }
 
     
     await match.save();
