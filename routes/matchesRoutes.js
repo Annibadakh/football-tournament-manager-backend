@@ -1,7 +1,7 @@
 const express = require('express');
 const authenticate = require("../middleware/authMiddleware");
 const router = express.Router();
-const {addMatch, getMatchesByTournament, getMatches, getMatchesById, updateStatus, updateScore, updateResult} = require('../controllers/matchController');
+const {addMatch, getMatchesByTournament, getMatches, getMatchesById, updateStatus, updateScore, updateResult, playerGoal} = require('../controllers/matchController');
 
 router.post('/add-match', authenticate(["admin"]), addMatch);
 
@@ -13,5 +13,7 @@ router.post('/update-status/:id', authenticate(["scorer", "admin"]), updateStatu
 router.post('/update-result/:id', authenticate(["scorer", "admin"]), updateResult);
 
 router.post('/update-score', authenticate(["scorer", "admin"]), updateScore);
+
+router.get('/match-player/:matchId/:playerId', playerGoal)
 
 module.exports = router;

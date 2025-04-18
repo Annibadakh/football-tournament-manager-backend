@@ -217,5 +217,28 @@ const updateResult = async (req, res) => {
   }
 };
 
+// In your routes file
+const playerGoal = async (req, res) => {
+  try {
+    const { matchId, playerId } = req.params;
+    
+    const matchPlayer = await MatchPlayer.findOne({
+      where: {
+        matchId: matchId,
+        playerId: playerId
+      }
+    });
+    
+    if (matchPlayer) {
+      res.json({ playerScore: matchPlayer.playerScore });
+    } else {
+      res.json({ playerScore: 0 });
+    }
+  } catch (error) {
+    console.error('Error fetching player score:', error);
+    res.status(500).json({ error: 'Failed to fetch player score' });
+  }
+};
 
-module.exports = {addMatch, getMatchesByTournament, getMatches, getMatchesById, updateStatus, updateScore, updateResult};
+
+module.exports = {addMatch, getMatchesByTournament, getMatches, getMatchesById, updateStatus, updateScore, updateResult, playerGoal};
