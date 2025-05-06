@@ -2,12 +2,14 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const authenticate = require("../middleware/authMiddleware");
+
 
 const router = express.Router();
 const SECRET_KEY = process.env.JWT_SECRET;
 
 // Register Route
-router.post("/register", async (req, res) => {
+router.post("/register", authenticate(["superadmin"]), async (req, res) => {
   const { name, email, password, role, contactNum } = req.body;
 
   try {
@@ -24,8 +26,9 @@ router.post("/register", async (req, res) => {
     // const text = `${newUser.role.toUpperCase()} Register Successfully !!`;
     // await sendMail(email, `${newUser.role.toUpperCase()} Register Successfully !!`, text , htmlContent);
     
-    res.status(201).json({ message: "User registered successfully", user: newUser });
+    res.status(200).json({ message: "User registered successfully", user: newUser });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Server error", error });
   }
 });

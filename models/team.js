@@ -52,8 +52,5 @@ const Team = sequelize.define("Team", {
   },
 });
 
-// sequelize.sync()
-//   .then(() => console.log("team table created"))
-//   .catch((err) => console.error("Error:", err));
 
 module.exports = Team;

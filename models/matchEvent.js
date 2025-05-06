@@ -12,9 +12,5 @@ const sequelize = require('../config/database');
         allowNull: false,
       },
     });
-  
-// sequelize.sync()
-//   .then(() => console.log("match event table created"))
-//   .catch((err) => console.error("Error:", err));
 
 module.exports = MatchEvent;  

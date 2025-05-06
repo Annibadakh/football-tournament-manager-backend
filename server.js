@@ -10,6 +10,7 @@ const teamRoutes = require("./routes/teamRoutes");
 const playerRoutes = require("./routes/playerRoutes");
 const matchRoutes = require("./routes/matchesRoutes");
 const operationRoutes = require('./routes/operationRoutes');
+const paymentRoute = require("./routes/payment");
 
 const path = require("path");
 
@@ -37,6 +38,7 @@ app.post("/api/upload-photo", upload.single("file"), (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/payment", paymentRoute);
 app.use("/api", dashboardRoutes);
 app.use("/api/tournament", tournamentRoutes);
 app.use("/api/team", teamRoutes);
@@ -54,6 +56,7 @@ app.get('/', (req, res) => {
 app.listen(PORT, async () => {
     try {
       await sequelize.authenticate();
+      // await sequelize.sync();
       console.log(`Server running on http://localhost:${PORT}`);
     } catch (error) {
       console.error("Unable to connect to DB:", error);

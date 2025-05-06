@@ -65,8 +65,5 @@ const Match = sequelize.define('Match', {
   }
 });
 
-// sequelize.sync()
-//   .then(() => console.log("match table created"))
-//   .catch((err) => console.error("Error:", err));
 
 module.exports = Match;

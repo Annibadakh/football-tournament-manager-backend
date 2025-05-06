@@ -26,8 +26,5 @@ const MatchPlayer = sequelize.define('match_player', {
   }
 });
 
-// sequelize.sync()
-//   .then(() => console.log("match_player table created"))
-//   .catch((err) => console.error("Error:", err));
 
 module.exports = MatchPlayer;
