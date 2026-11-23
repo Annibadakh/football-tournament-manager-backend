@@ -1,7 +1,7 @@
 const Team = require("../models/team");
 const User = require("../models/user");
 const Tournament = require("../models/tournament");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 
 const addTeam = async (req, res) => {
   const {teamName, captainName,  captainEmail, captainContact, isApproved, logoUrl,totalPoints, tournamentId} = req.body;
