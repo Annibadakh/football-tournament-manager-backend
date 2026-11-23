@@ -123,6 +123,27 @@ Each module has **one router and one controller**. The HTTP method expresses the
 - Do not add a layer, util or package until it solves a real, repeated problem.
 - The repository layer is the one deliberate abstraction (rule 9). Keep it thin, with one function per query.
 
+## Async code
+- Use **async/await everywhere**. Do not mix in `.then()` chains or callbacks. Callback-only APIs are wrapped with `util.promisify` or replaced with their promise versions (`fs/promises`).
+- Express 5 forwards rejected promises to the error handler, so handlers do not need `try/catch` just to call `next(err)`. Use `try/catch` only when you handle or translate the error.
+- Run independent awaits in parallel with `Promise.all`. Keep awaits sequential only when one depends on the other.
+
+## Validation middleware
+- One common middleware, `middlewares/validate.js`: `validate({ body, params, query })` takes zod schemas, parses each part, and fails with `VALIDATION_ERROR` plus field errors.
+- Controllers and services read the **parsed** values (with coercion, defaults and unknown keys stripped), never the raw `req.body`.
+- No manual `if (!field)` checks in controllers.
+
+## Database rules
+| Rule | How |
+|---|---|
+| **No raw SQL** | Use Sequelize model methods (`findAll`, `findOne`, `create`, `update`, `increment`, `count`…) and `Op` operators. If a raw query is ever unavoidable, it needs review and must use `replacements`/`bind` parameters. Never use string interpolation. |
+| **Transactions for dependent writes** | Any operation that changes more than one row or table that depends on another (for example ending a match plus awarding points, recording a goal plus updating match, team and player totals, or creating a captain user plus a team) runs in `sequelize.transaction(async (t) => { ... })`. The service owns the transaction and passes `{ transaction: t }` to every repository call. |
+| **Atomic counters** | Use `Model.increment()` / `decrement()` for scores and points instead of read-modify-save, to avoid race conditions. |
+| **Indexes** | Add an index to every foreign key and to columns used often in `where`/`order` (for example `matches.tournament_id`, `matches.status`, `matches.start_date`, `teams.tournament_id`, `players.team_id`, `match_players (match_id, player_id)` unique, and `users.email` unique). Indexes are defined in migrations, and each new query is checked for one. |
+| **Select only needed columns** | Always pass `attributes` for lists and joins. Never return `password` (it is excluded by default through a model `defaultScope`). Use `raw: true` for read-only lists when model instances aren't needed. |
+| **Avoid N+1** | Never query inside a loop. Load related data with `include` (eager loading) using associations, or batch it with `where: { id: { [Op.in]: ids } }` and map the results in memory. Example: a match plus its two teams plus their players is one query with `include`, not 1 + 2 + 2 + N calls. |
+| **Paginate lists** | Every list endpoint uses `limit`/`offset` (or `findAndCountAll`) with a max `pageSize`. Never return an unbounded `findAll()` to the client. |
+
 ## Comments
 Comments are **short, meaningful, one line**. They explain **why** (or a non-obvious *what*), never repeat the code.
 
