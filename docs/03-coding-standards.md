@@ -39,7 +39,8 @@ route → middleware (auth, rateLimit, validate) → controller → service → 
 | `models/` | Sequelize model definitions and associations | Contain logic |
 | `validations/` | zod schemas for `body`, `params` and `query` (backend-owned, not shared with the frontend) | Hit the DB |
 | `utils/` | Pure helpers: `apiResponse`, `ApiError`, pagination, image processing | Depend on `req`/`res` |
-| `config/` | env, DB, constants | |
+| `config/` | env loading and the DB connection | Hold business constants |
+| `constants/` | Per-module constants and enums (`match.constants.js`, …) | Import from services, models or other layers |
 
 Multi-step writes (for example ending a match and then updating team points) run inside a **Sequelize transaction** started in the service.
 
@@ -112,7 +113,25 @@ Each module has **one router and one controller**. The HTTP method expresses the
 
 ### 7. Centralized configuration & constants
 - `config/env.js` loads dotenv **once**, validates the required env vars with zod at startup, and exports a typed config object. Nothing else reads `process.env`.
-- `config/constants.js` holds roles, match statuses, stages, outcomes, pagination defaults and upload limits.
+- Constants are **centralized per module**: one file per module in `constants/`, for example `match.constants.js`, `team.constants.js`, `user.constants.js`, plus `common.constants.js` for cross-module values. Never define a status or role inline in a controller, service, model or schema.
+- Enumerations use **numeric codes**, frozen and grouped in one object. Always compare against the constant, never a raw number or string:
+```js
+// Numeric codes are stored in the DB; never compare against raw numbers
+const MATCH_STATUS = Object.freeze({
+  SCHEDULED: 1,
+  LIVE: 2,
+  COMPLETED: 3,
+  CANCELLED: 4,
+});
+
+if (match.status === MATCH_STATUS.COMPLETED) {
+  // ...
+}
+```
+- **DB storage:** enum columns are `TINYINT` holding the numeric code, never a MySQL `ENUM` of strings. Models and migrations read their allowed values from the constant (`validate: { isIn: [Object.values(MATCH_STATUS)] }`).
+- **Validation:** zod schemas use the same constant, for example `z.enum(MATCH_STATUS)` (zod 4 accepts enum-like objects).
+- **API:** responses send the numeric code. The frontend keeps the same codes in its own constants and maps them to labels.
+- Cross-module values (pagination defaults, upload limits, `ERROR_CODES`) go in `common.constants.js`.
 - Points come from the tournament settings (`pointsWin/Draw/Loss`), never hard-coded `3`/`1`.
 
 ### 8. Predictable API responses

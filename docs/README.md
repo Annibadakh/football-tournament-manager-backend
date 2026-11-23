@@ -9,6 +9,7 @@ Read these before starting work. They are the source of context for anyone (huma
 | [01-tech-stack.md](./01-tech-stack.md) | Package versions, chosen libraries and the rules for using each one | Active |
 | [02-api-response-standard.md](./02-api-response-standard.md) | Standard response envelope, error codes and pagination | Planning |
 | [03-coding-standards.md](./03-coding-standards.md) | Coding philosophy, layered architecture, naming, comments | Active |
+| [04-project-structure.md](./04-project-structure.md) | Target folder layout, changes, and the old→new endpoint map | Active |
 
 Related frontend docs live in `football-tournament-manager-frontend/docs/`.
 
