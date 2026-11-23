@@ -1,7 +1,7 @@
 # Tech Stack & Library Rules (Backend)
 
 Status: packages installed on `version-2` (2026-11-23). The new libraries are **installed only**. They are not wired into the code yet,
-except for the `bcryptjs` → `bcrypt` swap.
+except for the `bcryptjs` → `bcrypt` swap. `zod` was added 2026-11-23.
 
 Runtime: Node.js 22 LTS (CommonJS).
 
@@ -17,6 +17,7 @@ Runtime: Node.js 22 LTS (CommonJS).
 | jsonwebtoken | 9.0.2 | 9.0.3 | |
 | razorpay | 2.9.6 | 2.9.8 | |
 | cors | 2.8.5 | 2.8.6 | |
+| zod | — | 4.6.x | New. Request validation |
 | nodemon (dev) | 3.1.9 | 3.1.14 | |
 
 Removed (unused or replaced): `bcryptjs` (now `bcrypt`), `body-parser` (built into Express), `file-type`, `moment-timezone`.
@@ -36,4 +37,4 @@ Removed (unused or replaced): `bcryptjs` (now `bcrypt`), `body-parser` (built in
 | Password hashing | **bcrypt** | `bcrypt.hash(password, 12)` / `bcrypt.compare`. Already swapped in. Existing `$2a$` hashes from bcryptjs still verify. |
 | Authentication | **jsonwebtoken** | Access token signed with `JWT_SECRET`, with payload `{ uuid, role }` and a configurable expiry. Verified in `authenticate(roles)` middleware. |
 | Image processing | **sharp** | Every uploaded image (team logo, player photo, tournament logo) is resized, converted to WebP and compressed before it is saved. Multer keeps the file in memory and sharp writes it to `uploads/`. |
-| Validation | (to decide) | Recommend sharing **zod** with the frontend for request-body validation middleware. |
+| Validation | **zod** (v4) | Validate every request's `body`, `params` and `query` with a reusable `validate(schema)` middleware. Failures become a `VALIDATION_ERROR` response with a field-level `errors` array. Schemas live in **this repo only** (`src/validations/<entity>.schema.js`). They are **not shared** with the frontend, which keeps its own schemas. Backend schemas are the source of truth for security, so never trust frontend validation alone. |
