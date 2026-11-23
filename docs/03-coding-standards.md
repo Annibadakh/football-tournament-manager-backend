@@ -44,16 +44,61 @@ route → middleware (auth, rateLimit, validate) → controller → service → 
 Multi-step writes (for example ending a match and then updating team points) run inside a **Sequelize transaction** started in the service.
 
 ### 4. Naming conventions
-| Thing | Convention | Example |
+| Element | Convention | Example |
 |---|---|---|
-| Files | `<entity>.<layer>.js` | `team.controller.js`, `team.service.js`, `team.repository.js`, `team.schema.js`, `team.routes.js` |
+| Folders | kebab-case | `team-management/` |
+| Files | camelCase or kebab-case, with a dotted layer suffix | `team.service.js`, `matchUtils.js` |
+| Variables | camelCase | `teamId` |
+| Functions | camelCase | `createTeam()` |
+| Classes | PascalCase | `TeamService`, `ApiError` |
+| Constants | UPPER_SNAKE_CASE | `MAX_TEAM_SIZE` |
+| Database tables | snake_case | `tournament_teams` |
+| Database columns | snake_case | `created_at` |
+| API endpoints | kebab-case, plural resource nouns | `/api/team-members` |
+| Boolean variables | `is` / `has` / `can` prefix | `isActive` |
+| Layer files | `<module>.<layer>.js` | `match.controller.js`, `match.service.js`, `match.repository.js`, `match.schema.js`, `match.routes.js` |
 | Models | PascalCase singular | `Team`, `MatchPlayer` |
-| DB tables / columns | snake_case plural tables, snake_case columns (via Sequelize `underscored: true`) | `match_players.player_id` |
-| Functions | camelCase, verb-first | `createTeam`, `findTeamByUuid` |
-| Repository functions | `find*`, `create*`, `update*`, `delete*`, `count*` | `findMatchesByTournament` |
-| Constants | UPPER_SNAKE_CASE | `ROLES.ADMIN`, `MATCH_STATUS.ENDED` |
-| Routes | kebab-case plural resources (RESTful) | `GET /api/v1/teams/:teamId/players` |
-| Env vars | UPPER_SNAKE_CASE | `JWT_EXPIRES_IN` |
+
+#### Function naming
+Names must say **what** the function does and **to what**. No generic names.
+
+| Avoid | Prefer |
+|---|---|
+| `getData()` | `getTournamentDetails()` |
+| `processData()` | `calculateMatchPoints()` |
+| `update()` | `updateTeamDetails()` |
+| `check()` | `isRegistrationOpen()` |
+| `handle()` | `handleMatchCompletion()` |
+
+**Use verbs consistently:**
+| Verb | Meaning | Example |
+|---|---|---|
+| `get` | Retrieve data (by id, or a list) | `getMatchById()`, `getTeamsByTournament()` |
+| `find` | Search for a record that may not exist | `findUserByEmail()` |
+| `create` | Create a record | `createTournament()` |
+| `update` | Modify a record | `updateMatchStatus()` |
+| `delete` | Delete a record | `deletePlayer()` |
+| `is` / `has` | Boolean checks | `isMatchLive()`, `hasPaidEntryFee()` |
+| `calculate` | Perform calculations | `calculateGoalDifference()` |
+| `validate` | Validate data | `validateMatchSchedule()` |
+
+#### REST API endpoints
+Each module has **one router and one controller**. The HTTP method expresses the action, so URLs contain **no verbs**
+(no `/add-match`, `/edit-match` or `/get-matches`).
+
+| Method | Endpoint | Action | Controller fn |
+|---|---|---|---|
+| GET | `/api/matches` | List (supports `page`, `pageSize`, `sortBy`, `sortOrder`, `search`, filters) | `getMatches` |
+| GET | `/api/matches/:matchId` | Get one | `getMatchById` |
+| POST | `/api/matches` | Create | `createMatch` |
+| PATCH | `/api/matches/:matchId` | Partial update | `updateMatchDetails` |
+| DELETE | `/api/matches/:matchId` | Delete | `deleteMatch` |
+
+- Filter with query params instead of new paths: `GET /api/matches?tournamentId=…&status=started`.
+- Child resources are nested at most one level deep: `GET /api/teams/:teamId/players`.
+- A state change that is not a plain field edit becomes a sub-resource noun, not a verb: `PATCH /api/matches/:matchId/status`, `PATCH /api/teams/:teamId/approval`, `POST /api/matches/:matchId/goals`.
+- Path params are named `<resource>Id` (`matchId`, not `id`).
+
 
 ### 5. Explicit validation & error handling
 - Every route with input has a `validate(schema)` middleware. Controllers receive data that is already validated.
