@@ -10,6 +10,7 @@ Read these before starting work. They are the source of context for anyone (huma
 | [02-api-response-standard.md](./02-api-response-standard.md) | Standard response envelope, error codes and pagination | Planning |
 | [03-coding-standards.md](./03-coding-standards.md) | Coding philosophy, layered architecture, naming, comments | Active |
 | [04-project-structure.md](./04-project-structure.md) | Target folder layout, changes, and the old→new endpoint map | Active |
+| [05-business-requirements.md](./05-business-requirements.md) | Core business pillars: users and roles, tournaments, teams, payments, live | Agreed |
 
 Related frontend docs live in `football-tournament-manager-frontend/docs/`.
 
