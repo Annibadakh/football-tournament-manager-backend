@@ -29,6 +29,10 @@ class ApiError extends Error {
   static conflict(message, errors) {
     return new ApiError(HTTP_STATUS.CONFLICT, ERROR_CODES.CONFLICT, message, errors);
   }
+
+  static unavailable(message = "This service is not available right now") {
+    return new ApiError(HTTP_STATUS.SERVICE_UNAVAILABLE, ERROR_CODES.SERVICE_UNAVAILABLE, message);
+  }
 }
 
 module.exports = ApiError;

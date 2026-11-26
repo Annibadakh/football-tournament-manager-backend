@@ -1,6 +1,7 @@
 const { sequelize } = require("../models");
 const config = require("../config/env");
 const logger = require("../config/logger");
+const paymentRepository = require("../repositories/payment.repository");
 const teamRepository = require("../repositories/team.repository");
 const inviteRepository = require("../repositories/invite.repository");
 const positionRepository = require("../repositories/position.repository");
@@ -188,7 +189,29 @@ const listTournamentTeams = async (viewer, tournamentId, { status }) => {
   const isManager = canManageTournament(viewer, tournament);
   const statuses = isManager ? (status ? [status] : null) : [TEAM_STATUS.CONFIRMED];
   const teams = await teamRepository.findTeamsByTournament(tournament.id, { statuses });
-  return withSquadCounts(teams, { includeReview: isManager });
+  const presented = await withSquadCounts(teams, { includeReview: isManager });
+  if (!isManager) return presented;
+  return attachLatestPayments(teams, presented);
+};
+
+// Organizers see how each team paid (latest receipt), without a query per team
+const attachLatestPayments = async (teams, presented) => {
+  const payments = await paymentRepository.findReceiptPaymentsByTeams(teams.map((team) => team.id));
+  const latestByTeam = {};
+  payments.forEach((payment) => {
+    latestByTeam[payment.teamId] ??= {
+      id: payment.uuid,
+      method: payment.method,
+      status: payment.status,
+      amount: Number(payment.amount),
+      receiptNumber: payment.receiptNumber,
+      paidAt: payment.paidAt,
+    };
+  });
+  return presented.map((team, index) => ({
+    ...team,
+    latestPayment: latestByTeam[teams[index].id] ?? null,
+  }));
 };
 
 // ---------- commands ----------
@@ -367,18 +390,6 @@ const reviewTeamRequest = async (actor, teamUuid, { decision, reason }) => {
   return getTeamForViewer(actor, teamUuid);
 };
 
-// Manual confirmation for paid tournaments (e.g. cash paid at the ground)
-const confirmTeam = async (actor, teamUuid) => {
-  const team = await findTeamForManager(actor, teamUuid);
-  if (team.status !== TEAM_STATUS.AWAITING_PAYMENT)
-    throw ApiError.conflict("Only teams awaiting payment can be confirmed");
-  await teamRepository.updateTeam(team, {
-    status: TEAM_STATUS.CONFIRMED,
-    ...confirmationFields(TEAM_STATUS.CONFIRMED, actor),
-  });
-  return getTeamForViewer(actor, teamUuid);
-};
-
 const lockErrors = (team, members) => {
   const { minSquadSize, maxSquadSize } = team.tournament;
   const activeMembers = members.filter((member) => member.status === MEMBER_STATUS.ACTIVE);
@@ -541,7 +552,6 @@ module.exports = {
   addTeam,
   requestTeam,
   reviewTeamRequest,
-  confirmTeam,
   setTeamLock,
   withdrawTeam,
   removeTeam,

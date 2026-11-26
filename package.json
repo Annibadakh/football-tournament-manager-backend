@@ -36,6 +36,7 @@
     "jsonwebtoken": "^9.0.3",
     "mysql2": "^3.24.6",
     "nodemailer": "^10.6.1",
+    "pdfkit": "^0.21.0",
     "pino": "^10.4.0",
     "pino-http": "^11.0.0",
     "razorpay": "^2.9.8",

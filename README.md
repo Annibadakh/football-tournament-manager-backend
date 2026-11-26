@@ -48,6 +48,14 @@ Gmail allows about 500 emails per day. To switch provider later, change only the
 
 The frontend never calls Google directly: it uses `GET /api/v1/places/autocomplete` and `POST /api/v1/places` on this API, so there is no browser key. Without a key in development, a small built-in list of Maharashtra places (Kopargaon, Shirdi, Pune, Mumbai, grounds…) is used.
 
+## Payments (Razorpay)
+1. In the Razorpay Dashboard (Test mode first), go to **Account & Settings → API keys** and generate a key. Put the key id and secret in `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET`.
+2. **Account & Settings → Payment capture**: keep **automatic capture** on.
+3. **Webhooks → Add new webhook**: URL `https://<api-domain>/api/v1/payments/webhook`, a secret of your choice (put it in `RAZORPAY_WEBHOOK_SECRET`), events `payment.captured`, `order.paid`, `payment.failed`. Razorpay can't reach `localhost`. In development, the checkout callback alone confirms payments.
+4. `CONVENIENCE_FEE_PERCENT` (default 2.36) is added to every online entry-fee payment and rounded up to the whole rupee.
+
+Without keys, online payment is switched off and organizers can still record offline payments. Switch to live keys only after Razorpay activates the account (KYC).
+
 ## Scripts
 | Script | Purpose |
 |---|---|

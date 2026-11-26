@@ -54,6 +54,14 @@ const envSchema = z.object({
 
   GOOGLE_MAPS_API_KEY: z.string().optional(),
 
+  RAZORPAY_KEY_ID: z.string().optional(),
+  RAZORPAY_KEY_SECRET: z.string().optional(),
+  RAZORPAY_WEBHOOK_SECRET: z.string().optional(),
+  // Only for a local mock gateway in development/test; never set in production
+  RAZORPAY_API_URL: z.url().optional(),
+  // Platform convenience fee on online entry-fee payments (2% gateway + 18% GST)
+  CONVENIENCE_FEE_PERCENT: z.coerce.number().min(0).max(10).default(2.36),
+
   RATE_LIMIT_WINDOW_MS: z.coerce
     .number()
     .int()
@@ -66,10 +74,25 @@ const envSchema = z.object({
 // Email and file storage are optional while developing, mandatory in production
 const productionSchema = envSchema.superRefine((env, ctx) => {
   if (env.NODE_ENV !== "production") return;
-  ["SMTP_HOST", "SMTP_USER", "SMTP_PASS", "AWS_S3_BUCKET", "GOOGLE_MAPS_API_KEY"].forEach((key) => {
+  [
+    "SMTP_HOST",
+    "SMTP_USER",
+    "SMTP_PASS",
+    "AWS_S3_BUCKET",
+    "GOOGLE_MAPS_API_KEY",
+    "RAZORPAY_KEY_ID",
+    "RAZORPAY_KEY_SECRET",
+    "RAZORPAY_WEBHOOK_SECRET",
+  ].forEach((key) => {
     if (!env[key])
       ctx.addIssue({ code: "custom", path: [key], message: "is required in production" });
   });
+  if (env.RAZORPAY_API_URL)
+    ctx.addIssue({
+      code: "custom",
+      path: ["RAZORPAY_API_URL"],
+      message: "must not be set in production",
+    });
 });
 
 // Empty values from .env (e.g. "S3_ENDPOINT=") mean "not set", not an empty string
@@ -130,6 +153,15 @@ const config = Object.freeze({
     signedUrlTtlSeconds: env.S3_SIGNED_URL_TTL_SECONDS,
   }),
   googleMapsApiKey: env.GOOGLE_MAPS_API_KEY,
+  payments: Object.freeze({
+    isConfigured: Boolean(env.RAZORPAY_KEY_ID && env.RAZORPAY_KEY_SECRET),
+    keyId: env.RAZORPAY_KEY_ID,
+    keySecret: env.RAZORPAY_KEY_SECRET,
+    webhookSecret: env.RAZORPAY_WEBHOOK_SECRET,
+    apiUrl: env.RAZORPAY_API_URL,
+    // Basis points keep fee maths in integers (2.36% → 236)
+    convenienceFeeBps: Math.round(env.CONVENIENCE_FEE_PERCENT * 100),
+  }),
   rateLimit: Object.freeze({
     windowMs: env.RATE_LIMIT_WINDOW_MS,
     max: env.RATE_LIMIT_MAX,

@@ -33,8 +33,12 @@ const findTeamByUuid = (uuid, { transaction, lock = false } = {}) =>
     ...(lock && transaction && { lock: transaction.LOCK.UPDATE }),
   });
 
-const findTeamById = (id, { transaction } = {}) =>
-  Team.findByPk(id, { include: TEAM_INCLUDES, transaction });
+const findTeamById = (id, { transaction, lock = false } = {}) =>
+  Team.findByPk(id, {
+    include: TEAM_INCLUDES,
+    transaction,
+    ...(lock && transaction && { lock: transaction.LOCK.UPDATE }),
+  });
 
 const findTeamsByTournament = (tournamentId, { statuses }) =>
   Team.findAll({

@@ -30,6 +30,8 @@ app.use(
 // Allow images served from this API to be embedded by the frontend origin
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(cors({ origin: config.corsOrigins, credentials: true }));
+// Razorpay signs the exact bytes, so the webhook keeps its raw body
+app.use(`${API_PREFIX}/payments/webhook`, express.raw({ type: "*/*", limit: REQUEST_BODY_LIMIT }));
 app.use(express.json({ limit: REQUEST_BODY_LIMIT }));
 app.use(cookieParser());
 

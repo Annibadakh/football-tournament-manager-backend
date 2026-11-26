@@ -51,12 +51,6 @@ const reviewTeam = async (req, res) =>
     message: body(req).decision === "approve" ? "Request approved" : "Request rejected",
   });
 
-const confirmTeam = async (req, res) =>
-  sendSuccess(res, {
-    data: await teamService.confirmTeam(req.user, params(req).teamId),
-    message: "Team confirmed",
-  });
-
 const lockTeam = async (req, res) =>
   sendSuccess(res, {
     data: await teamService.setTeamLock(req.user, params(req).teamId, body(req)),
@@ -147,7 +141,6 @@ module.exports = {
   getTeam,
   updateTeam,
   reviewTeam,
-  confirmTeam,
   lockTeam,
   withdrawTeam,
   removeTeam,

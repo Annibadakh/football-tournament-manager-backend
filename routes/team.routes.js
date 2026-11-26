@@ -1,4 +1,5 @@
 const express = require("express");
+const paymentController = require("../controllers/payment.controller");
 const teamController = require("../controllers/team.controller");
 const {
   authenticate,
@@ -7,6 +8,7 @@ const {
 } = require("../middlewares/auth.middleware");
 const { validate } = require("../middlewares/validate.middleware");
 const schemas = require("../validations/team.schema");
+const paymentSchemas = require("../validations/payment.schema");
 
 const router = express.Router();
 const signedIn = [authenticate, requireVerified];
@@ -27,7 +29,20 @@ router.patch(
   validate({ ...team, body: schemas.reviewTeamSchema }),
   teamController.reviewTeam,
 );
-router.patch("/:teamId/confirmation", ...signedIn, validate(team), teamController.confirmTeam);
+// Offline payment recorded by the organizer confirms the team
+router.patch(
+  "/:teamId/confirmation",
+  ...signedIn,
+  validate({ ...team, body: paymentSchemas.offlinePaymentSchema }),
+  paymentController.recordOfflinePayment,
+);
+router.get("/:teamId/payments", authenticate, validate(team), paymentController.getTeamPayments);
+router.post(
+  "/:teamId/payment-orders",
+  ...signedIn,
+  validate(team),
+  paymentController.createPaymentOrder,
+);
 router.patch(
   "/:teamId/lock",
   ...signedIn,
