@@ -1,6 +1,6 @@
 # Phase 2: Tournaments (module plan)
 
-Status: **In progress** (decisions confirmed 2026-11-26). Part of `plans/implementation-plan.md`.
+Status: **Done** (2026-11-27). Part of `plans/implementation-plan.md`.
 Goal: tournaments exist end to end. Admins create them under organizers, organizers complete and run them through their lifecycle, and the public can find them by name, place or near me and open a tournament page.
 Teams, squads, staff, payments and matches come in later phases. This phase only stores the settings they will use.
 
@@ -39,6 +39,8 @@ Constants (proposed): `TOURNAMENT_STATUS`, `TOURNAMENT_VISIBILITY`, `TOURNAMENT_
 | PATCH | `/tournaments/:tournamentId` | Organizer (own) · Admin |
 | PATCH | `/tournaments/:tournamentId/status` | Organizer (own) · Admin |
 | GET | `/me/tournaments` (dashboard list) | Organizer (own) · Admin (all) |
+| GET | `/tournament-categories` (game formats, age groups, gender categories) | Public |
+| GET | `/places/autocomplete` | Logged-in |
 | GET/PUT | `/tournaments/:tournamentId/grounds` | Owner · Admin |
 | GET/PUT | `/tournaments/:tournamentId/rules` | Public (GET) · Owner · Admin |
 | GET/POST/PATCH | `/rules` (master rule book) | Public (GET) · Admin |
@@ -57,3 +59,9 @@ Constants (proposed): `TOURNAMENT_STATUS`, `TOURNAMENT_VISIBILITY`, `TOURNAMENT_
 | Google Places | **Backend proxy** with one server key (`GOOGLE_MAPS_API_KEY`): `GET /places/autocomplete` and `POST /places` (Place Details → upsert `places`). Keeps the key private and works for the mobile app. In development without a key, a small built-in sample of Maharashtra places is used so the app works locally |
 | Locations stored | `tournaments.city_place_id` (set by admin, used for feeds and search) and `tournaments.venue_place_id` (organizer). `users.city` becomes `users.city_place_id` |
 | Editing after start | Once ONGOING, structure fields (format, categories, team/squad limits, points) are locked. Description, logo, banner, contact and grounds stay editable |
+
+## Outcome
+- **Backend**: places (Google Places proxy with a dev sample fallback, SRID 4326 points, spatial index), category master tables (seeded), tournaments with guarded status flow and structure locks, public search/filters/near-me, grounds with stable ids, master + tournament rule books, tournament logo/banner uploads, and `users.city_place_id`. 24 unit tests. A 58-check Phase 2 e2e run and the 52-check Phase 1 e2e run pass against MySQL 8 + an S3 emulator.
+- **Frontend**: public tournaments list (search, filters, near me via browser location, distance on cards) and tournament page (overview, venue + maps link, grounds, rule book, organizer). Dashboard: tournaments table (admins see all, organizers see their own), admin create modal, editor with Details / Grounds / Rule book tabs and status actions (missing details highlighted), admin master rule book page, profile city via place search. New components: `PlaceSearch`, `Switch`, `Tabs`, `ImageUploadField` (+ `useImageUpload`), `TournamentCard`, `TournamentStatusBadge`. 29 tests. Verified end to end in Chromium (admin → organizer → public, phone + dark mode).
+- **Bug fixed during testing**: the public list accepted `status=1` (draft) as a filter. It now rejects non-public statuses.
+- **Owner setup**: Google Cloud **Places API (New)** + a server key in `GOOGLE_MAPS_API_KEY` (backend README). No browser key is needed.
