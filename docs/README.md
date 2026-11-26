@@ -13,6 +13,7 @@ Read these before starting work. They are the source of context for anyone (huma
 | [05-business-requirements.md](./05-business-requirements.md) | Core business pillars: users and roles, tournaments, teams, payments, live | Agreed |
 | [plans/v1-to-v2-gap-analysis.md](./plans/v1-to-v2-gap-analysis.md) | What v1 does vs what v2 needs (keep / change / new / remove) | Draft |
 | [plans/implementation-plan.md](./plans/implementation-plan.md) | Build phases, draft DB schema, dependency order | Draft |
+| [plans/future-feeds-and-cms.md](./plans/future-feeds-and-cms.md) | Home feeds + CMS (last phase) and the provisions earlier phases must store | Agreed |
 
 Related frontend docs live in `football-tournament-manager-frontend/docs/`.
 
