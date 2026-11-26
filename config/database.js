@@ -8,9 +8,13 @@ const sequelize = new Sequelize(config.db.name, config.db.user, config.db.passwo
   dialect: "mysql",
   timezone: "+00:00",
   logging: config.db.logging ? (sql) => logger.debug(sql) : false,
+  // utf8mb4 stores Marathi/Devanagari text and emoji; 0900_ai_ci is the MySQL 8 default collation
+  dialectOptions: { charset: "utf8mb4" },
   define: {
     underscored: true,
     timestamps: true,
+    charset: "utf8mb4",
+    collate: "utf8mb4_0900_ai_ci",
   },
   pool: { max: 10, min: 0, idle: 10000 },
 });

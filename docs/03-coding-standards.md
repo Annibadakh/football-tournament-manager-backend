@@ -163,6 +163,32 @@ if (match.status === MATCH_STATUS.COMPLETED) {
 | **Avoid N+1** | Never query inside a loop. Load related data with `include` (eager loading) using associations, or batch it with `where: { id: { [Op.in]: ids } }` and map the results in memory. Example: a match plus its two teams plus their players is one query with `include`, not 1 + 2 + 2 + N calls. |
 | **Paginate lists** | Every list endpoint uses `limit`/`offset` (or `findAndCountAll`) with a max `pageSize`. Never return an unbounded `findAll()` to the client. |
 
+## MySQL conventions
+The database is **MySQL 8** (8.0 minimum, **8.4 LTS recommended** for production). Not MariaDB: we use MySQL 8 features (utf8mb4_0900 collations, `CHECK` constraints, functional indexes, spatial functions).
+
+| Item | Convention | Example |
+|---|---|---|
+| Engine / charset / collation | InnoDB, `utf8mb4`, `utf8mb4_0900_ai_ci` (set in `config/database.js` and on every `createTable`) | Stores Marathi/Devanagari and emoji |
+| Table names | snake_case, **plural** | `tournaments`, `team_members`, `match_events` |
+| Join/link tables | both entities in snake_case, plural last | `user_positions`, `tournament_staff` |
+| Column names | snake_case, singular | `entry_fee`, `scheduled_at` |
+| Primary key | `id` INT UNSIGNED AUTO_INCREMENT (BIGINT UNSIGNED for high-volume logs such as `match_logs`) | |
+| Public id | `uuid` CHAR(36), unique | Used in URLs and API responses |
+| Foreign key column | `<singular_table>_id` (or a role name) | `tournament_id`, `captain_user_id` |
+| Booleans | TINYINT(1) with an `is_`/`has_` prefix | `is_squad_locked` |
+| Status / type codes | TINYINT UNSIGNED holding constants (never MySQL `ENUM`) | `status`, `staff_role` |
+| Money | DECIMAL(10,2), never FLOAT | `entry_fee`, `amount` |
+| Date / time | `DATE` for dates, `DATETIME` for moments (stored in UTC), `_at` suffix for moments | `start_date`, `paid_at` |
+| JSON | Native `JSON` type, only for unstructured payloads | `match_logs.payload` |
+| Location | `latitude`/`longitude` DECIMAL(9,6) plus a `POINT SRID 4326` column with a spatial index for "near me" (`ST_Distance_Sphere`) | Decided in Phase 2 |
+| Index names | `idx_<table>_<columns>` | `idx_matches_tournament_id_status` |
+| Unique names | `uq_<table>_<columns>` | `uq_team_members_tournament_id_user_id` |
+| Foreign key names | `fk_<table>_<column>` | `fk_teams_tournament_id` |
+| Reserved words | Never use MySQL reserved words as table/column names | Avoid `match`, `order`, `group`, `rank`, `key`, `condition`, `range` |
+
+- All schema changes are **migrations**. No `sequelize.sync()`. Foreign keys use explicit `ON DELETE` rules (usually `RESTRICT`. `CASCADE` only for owned child rows).
+- Every query uses ORM methods or bound parameters (see Database rules).
+
 ## Comments
 Comments are **short, meaningful, one line**. They explain **why** (or a non-obvious *what*), never repeat the code.
 

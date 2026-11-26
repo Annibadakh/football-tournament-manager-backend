@@ -9,6 +9,8 @@ const cliConfig = {
   port: config.db.port,
   dialect: "mysql",
   timezone: "+00:00",
+  dialectOptions: { charset: "utf8mb4" },
+  define: { charset: "utf8mb4", collate: "utf8mb4_0900_ai_ci" },
   migrationStorageTableName: "sequelize_meta",
   seederStorage: "sequelize",
   seederStorageTableName: "sequelize_data",
