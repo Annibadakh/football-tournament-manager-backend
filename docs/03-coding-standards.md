@@ -55,7 +55,7 @@ Multi-step writes (for example ending a match and then updating team points) run
 | Constants | UPPER_SNAKE_CASE | `MAX_TEAM_SIZE` |
 | Database tables | snake_case | `tournament_teams` |
 | Database columns | snake_case | `created_at` |
-| API endpoints | kebab-case, plural resource nouns | `/api/team-members` |
+| API endpoints | kebab-case, plural resource nouns | `/api/v1/team-members` |
 | Boolean variables | `is` / `has` / `can` prefix | `isActive` |
 | Layer files | `<module>.<layer>.js` | `match.controller.js`, `match.service.js`, `match.repository.js`, `match.schema.js`, `match.routes.js` |
 | Models | PascalCase singular | `Team`, `MatchPlayer` |
@@ -89,15 +89,15 @@ Each module has **one router and one controller**. The HTTP method expresses the
 
 | Method | Endpoint | Action | Controller fn |
 |---|---|---|---|
-| GET | `/api/matches` | List (supports `page`, `pageSize`, `sortBy`, `sortOrder`, `search`, filters) | `getMatches` |
-| GET | `/api/matches/:matchId` | Get one | `getMatchById` |
-| POST | `/api/matches` | Create | `createMatch` |
-| PATCH | `/api/matches/:matchId` | Partial update | `updateMatchDetails` |
-| DELETE | `/api/matches/:matchId` | Delete | `deleteMatch` |
+| GET | `/api/v1/matches` | List (supports `page`, `pageSize`, `sortBy`, `sortOrder`, `search`, filters) | `getMatches` |
+| GET | `/api/v1/matches/:matchId` | Get one | `getMatchById` |
+| POST | `/api/v1/matches` | Create | `createMatch` |
+| PATCH | `/api/v1/matches/:matchId` | Partial update | `updateMatchDetails` |
+| DELETE | `/api/v1/matches/:matchId` | Delete | `deleteMatch` |
 
-- Filter with query params instead of new paths: `GET /api/matches?tournamentId=…&status=started`.
-- Child resources are nested at most one level deep: `GET /api/teams/:teamId/players`.
-- A state change that is not a plain field edit becomes a sub-resource noun, not a verb: `PATCH /api/matches/:matchId/status`, `PATCH /api/teams/:teamId/approval`, `POST /api/matches/:matchId/goals`.
+- Filter with query params instead of new paths: `GET /api/v1/matches?tournamentId=…&status=started`.
+- Child resources are nested at most one level deep: `GET /api/v1/teams/:teamId/players`.
+- A state change that is not a plain field edit becomes a sub-resource noun, not a verb: `PATCH /api/v1/matches/:matchId/status`, `PATCH /api/v1/teams/:teamId/approval`, `POST /api/v1/matches/:matchId/goals`.
 - Path params are named `<resource>Id` (`matchId`, not `id`).
 
 

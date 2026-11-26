@@ -8,7 +8,7 @@ const logger = require("./config/logger");
 const routes = require("./routes");
 const { apiLimiter } = require("./middlewares/rateLimit.middleware");
 const { notFoundHandler, errorHandler } = require("./middlewares/error.middleware");
-const { REQUEST_BODY_LIMIT } = require("./constants/common.constants");
+const { REQUEST_BODY_LIMIT, API_PREFIX } = require("./constants/common.constants");
 
 const app = express();
 
@@ -31,7 +31,7 @@ app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(cors({ origin: config.corsOrigins, credentials: true }));
 app.use(express.json({ limit: REQUEST_BODY_LIMIT }));
 
-app.use("/api", apiLimiter, routes);
+app.use(API_PREFIX, apiLimiter, routes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

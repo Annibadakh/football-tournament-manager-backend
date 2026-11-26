@@ -37,4 +37,14 @@ const SORT_ORDER = Object.freeze({
 
 const REQUEST_BODY_LIMIT = "100kb";
 
-module.exports = { ERROR_CODES, HTTP_STATUS, PAGINATION, SORT_ORDER, REQUEST_BODY_LIMIT };
+// Versioned so a future mobile app keeps working if v2 of the API is ever needed
+const API_PREFIX = "/api/v1";
+
+module.exports = {
+  ERROR_CODES,
+  HTTP_STATUS,
+  PAGINATION,
+  SORT_ORDER,
+  REQUEST_BODY_LIMIT,
+  API_PREFIX,
+};

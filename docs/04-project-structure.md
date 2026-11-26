@@ -1,6 +1,6 @@
 # Project Structure (Backend)
 
-Decision: keep **layer folders** (one file per module inside each layer). API prefix: **`/api`** (no version segment).
+Decision: keep **layer folders** (one file per module inside each layer). API prefix: **`/api/v1`** (versioned so a future mobile app keeps working; see `02-api-response-standard.md`).
 Status: target structure for v2. Existing files move into it as each module is rewritten.
 
 ```
@@ -20,7 +20,7 @@ football-tournament-manager-backend/
 │   ├── player.constants.js    # PLAYER_POSITION
 │   └── match.constants.js     # MATCH_STATUS, MATCH_STAGE, MATCH_OUTCOME, MATCH_EVENT_TYPE
 ├── routes/
-│   ├── index.js               # Mounts every module router under /api
+│   ├── index.js               # Mounts every module router under /api/v1
 │   └── <module>.routes.js
 ├── middlewares/               # Renamed from middleware/ (plural, like the other layers)
 │   ├── auth.middleware.js     # authenticate + authorize(roles)
@@ -64,28 +64,28 @@ The `dashboard` module is dropped: its only endpoint is unused (the frontend cal
 ## Endpoint migration map
 | Current | v2 |
 |---|---|
-| `POST /api/auth/login` | `POST /api/auth/login` (auth is the one action-style exception) |
-| `POST /api/auth/register` | `POST /api/users` (superadmin creates admin/scorer users) |
+| `POST /api/auth/login` | `POST /api/v1/auth/login` (auth is the one action-style exception) |
+| `POST /api/auth/register` | `POST /api/v1/users` (superadmin creates admin/scorer users) |
 | `GET /api/dashboard` | Removed |
-| `GET /api/tournament/all` | `GET /api/tournaments` |
-| `POST /api/tournament/create-tournament` | `POST /api/tournaments` |
-| `POST /api/team/add-team` | `POST /api/teams` |
-| `GET /api/team/get-teams/:tournamentId` | `GET /api/teams?tournamentId=` |
-| `GET /api/team/get-team/:id` | `GET /api/teams/:teamId` |
-| `GET /api/team/get-captainteam/:uuid` | `GET /api/teams?captainId=` (captain may read only their own) |
-| `PATCH /api/team/approve/:uuid` | `PATCH /api/teams/:teamId/approval` (now admin-only) |
-| `POST /api/player/add-player` | `POST /api/players` |
-| `GET /api/player/get-players/:teamId` | `GET /api/players?teamId=` |
-| `GET /api/player/top-scorers` | `GET /api/players?tournamentId=&sortBy=goals&sortOrder=desc&pageSize=3` |
-| `GET /api/match/get-matches`, `/get-matches/:tournamentId` | `GET /api/matches?tournamentId=&status=` |
-| `GET /api/match/get-match/:id` | `GET /api/matches/:matchId` (includes teams, players and goals in one response) |
-| `POST /api/match/add-match` | `POST /api/matches` |
-| `POST /api/match/update-status/:id` | `PATCH /api/matches/:matchId/status` |
-| `POST /api/match/update-result/:id` | `PATCH /api/matches/:matchId/result` |
-| `POST /api/match/update-score` | `POST /api/matches/:matchId/goals` |
-| `GET /api/match/match-player/:matchId/:playerId` | Removed (included in `GET /api/matches/:matchId`) |
-| `POST /api/operations/add`, `GET /api/operations/get` | `POST` / `GET /api/matches/:matchId/events` |
-| `POST /api/upload-photo` | `POST /api/uploads` |
-| `POST /api/payment/create-order` | `POST /api/payments/orders` |
+| `GET /api/tournament/all` | `GET /api/v1/tournaments` |
+| `POST /api/tournament/create-tournament` | `POST /api/v1/tournaments` |
+| `POST /api/team/add-team` | `POST /api/v1/teams` |
+| `GET /api/team/get-teams/:tournamentId` | `GET /api/v1/teams?tournamentId=` |
+| `GET /api/team/get-team/:id` | `GET /api/v1/teams/:teamId` |
+| `GET /api/team/get-captainteam/:uuid` | `GET /api/v1/teams?captainId=` (captain may read only their own) |
+| `PATCH /api/team/approve/:uuid` | `PATCH /api/v1/teams/:teamId/approval` (now admin-only) |
+| `POST /api/player/add-player` | `POST /api/v1/players` |
+| `GET /api/player/get-players/:teamId` | `GET /api/v1/players?teamId=` |
+| `GET /api/player/top-scorers` | `GET /api/v1/players?tournamentId=&sortBy=goals&sortOrder=desc&pageSize=3` |
+| `GET /api/match/get-matches`, `/get-matches/:tournamentId` | `GET /api/v1/matches?tournamentId=&status=` |
+| `GET /api/match/get-match/:id` | `GET /api/v1/matches/:matchId` (includes teams, players and goals in one response) |
+| `POST /api/match/add-match` | `POST /api/v1/matches` |
+| `POST /api/match/update-status/:id` | `PATCH /api/v1/matches/:matchId/status` |
+| `POST /api/match/update-result/:id` | `PATCH /api/v1/matches/:matchId/result` |
+| `POST /api/match/update-score` | `POST /api/v1/matches/:matchId/goals` |
+| `GET /api/match/match-player/:matchId/:playerId` | Removed (included in `GET /api/v1/matches/:matchId`) |
+| `POST /api/operations/add`, `GET /api/operations/get` | `POST` / `GET /api/v1/matches/:matchId/events` |
+| `POST /api/upload-photo` | `POST /api/v1/uploads` |
+| `POST /api/payment/create-order` | `POST /api/v1/payments/orders` |
 
 The final payloads for each endpoint are designed during feature planning.

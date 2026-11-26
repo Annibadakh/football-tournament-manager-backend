@@ -33,7 +33,7 @@ Removed (unused or replaced): `bcryptjs` (now `bcrypt`), `body-parser` (built in
 | Concern | Library | Rule |
 |---|---|---|
 | Security headers | **helmet** | `app.use(helmet())` early in `server.js`. Configure `crossOriginResourcePolicy` so the frontend can still load `/uploads` images. |
-| Rate limiting | **express-rate-limit** | A general limiter on `/api`, plus a strict limiter on `/api/auth/login` and other sensitive routes. Responses use the standard envelope with code `RATE_LIMITED`. |
+| Rate limiting | **express-rate-limit** | A general limiter on `/api/v1`, plus a strict limiter on `/api/v1/auth/login` and other sensitive routes. Responses use the standard envelope with code `RATE_LIMITED`. |
 | Password hashing | **bcrypt** | `bcrypt.hash(password, 12)` / `bcrypt.compare`. Already swapped in. Existing `$2a$` hashes from bcryptjs still verify. |
 | Authentication | **jsonwebtoken** | Access token signed with `JWT_SECRET`, with payload `{ uuid, role }` and a configurable expiry. Verified in `authenticate(roles)` middleware. |
 | Image processing | **sharp** | Every uploaded image (team logo, player photo, tournament logo) is resized, converted to WebP and compressed before it is saved. Multer keeps the file in memory and sharp writes it to `uploads/`. |

@@ -13,7 +13,7 @@ Project documentation lives in [`docs/`](./docs/README.md).
    npm run db:migrate
    npm run db:seed
    ```
-5. Start: `npm run dev`, then check `GET http://localhost:5000/api/health`.
+5. Start: `npm run dev`, then check `GET http://localhost:5000/api/v1/health`.
 
 ## Scripts
 | Script | Purpose |

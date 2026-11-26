@@ -46,7 +46,7 @@ The API serves the React web app now and a **mobile app (Android/iOS) in a futur
 | Business logic lives in the API, never only in the web UI | The app must enforce the same rules without duplicating them |
 | Auth works **with or without cookies**: web keeps the refresh token in an httpOnly cookie, the app sends it in the request body and stores it in secure storage. The access token is always `Authorization: Bearer` | Native apps don't share browser cookies |
 | The client identifies itself with `X-Client-Platform: web \| android \| ios` and `X-App-Version` | Analytics, platform-specific behaviour, forcing an update on old apps |
-| `GET /api/app-config` (later): minimum supported app version, feature flags | Lets us tell old app versions to update |
+| `GET /api/v1/app-config` (later): minimum supported app version, feature flags | Lets us tell old app versions to update |
 | Timestamps in **ISO 8601 UTC** (`2026-11-26T06:00:00.000Z`). The client formats them for local time | Same parsing on every platform |
 | Image and file URLs are **absolute** URLs | Apps have no "current origin" to resolve relative paths |
 | Stable machine-readable `code` on every error, plus field-level `errors` | The app can show its own translated messages |

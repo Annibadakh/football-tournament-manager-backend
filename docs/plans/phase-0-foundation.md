@@ -6,13 +6,13 @@ Goal: the skeleton every later phase builds on. **No business features in this p
 ## Backend tasks
 
 1. **Structure**: create the layer folders from `04-project-structure.md` (`constants/`, `middlewares/`, `services/`, `repositories/`, `validations/`, `utils/`, `migrations/`, `seeders/`).
-2. **App bootstrap**: `app.js` (helmet, CORS allow-list from env, JSON body limit, rate limiter, request logging, `/api` router, 404 + error handler) and `server.js` (DB connect check, listen, graceful shutdown).
+2. **App bootstrap**: `app.js` (helmet, CORS allow-list from env, JSON body limit, rate limiter, request logging, `/api/v1` router, 404 + error handler) and `server.js` (DB connect check, listen, graceful shutdown).
 3. **Config**: `config/env.js` loads dotenv once (`quiet: true`) and validates every variable with zod. The server refuses to start with a clear message if something is missing. `config/database.js` reads from it. Add `.env.example`.
 4. **Response layer**: `utils/apiResponse.js` (`sendSuccess`), `utils/ApiError.js`, `constants/common.constants.js` (`ERROR_CODES`, pagination defaults).
 5. **Middlewares**: `validate.middleware.js` (zod body/params/query), `error.middleware.js` (envelope, no stack traces in production, maps Sequelize validation/unique errors), `rateLimit.middleware.js` (general + strict auth limiter), `auth.middleware.js` skeleton (filled in Phase 1).
 6. **Pagination helper**: `utils/pagination.js` (page/pageSize/sortBy/sortOrder → limit/offset/order + `meta`).
 7. **Database tooling**: sequelize-cli with `.sequelizerc`, `models/index.js` (loader + associations hook), first migration/seeder pipeline working (`npm run db:migrate`, `db:seed`, `db:reset`).
-8. **Health endpoint**: `GET /api/health` (uptime + DB status) as the reference module through every layer.
+8. **Health endpoint**: `GET /api/v1/health` (uptime + DB status) as the reference module through every layer.
 9. **Logging**: `pino` + `pino-http` (pretty in dev, JSON in production, request id per request).
 10. **Quality**: ESLint + Prettier, Vitest + Supertest with a health test, `.nvmrc` (Node 22), commit `package-lock.json`.
 11. **Cleanup**: delete v1 backend modules (controllers, models, routes, `controllers.zip`). v1 stays available on `main` for reference.
@@ -32,8 +32,8 @@ Goal: the skeleton every later phase builds on. **No business features in this p
 
 ## Done when
 
-- The backend starts only with a valid env, `GET /api/health` returns the standard envelope, migrations run, and tests and lint pass.
-- The frontend builds, lint passes, the showcase page shows all P1 components in their states, and calling `/api/health` through `request()` works end to end.
+- The backend starts only with a valid env, `GET /api/v1/health` returns the standard envelope, migrations run, and tests and lint pass.
+- The frontend builds, lint passes, the showcase page shows all P1 components in their states, and calling `/api/v1/health` through `request()` works end to end.
 
 ## Decisions (confirmed 2026-11-26)
 
