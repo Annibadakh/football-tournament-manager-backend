@@ -36,13 +36,18 @@ Goal: the skeleton every later phase builds on. **No business features in this p
 - The frontend builds, lint passes, the showcase page shows all P1 components in their states, and calling `/api/v1/health` through `request()` works end to end.
 
 ## Decisions (confirmed 2026-11-26)
-
-| Topic                 | Decision                                                                                                                             |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| v1 code               | **Delete in Phase 0**. v1 stays on `main` for reference                                                                              |
-| Local database        | Developer's **own MySQL** (no Docker). Connection via `.env`                                                                         |
-| Fonts                 | **Baloo 2** for headings and brand, **Noto Sans** for body/UI text (both via `@fontsource`, both support Devanagari)                 |
-| Dark mode             | **Light and dark from the start**. Default follows the **system setting**, with a Light / Dark / System toggle remembered per device |
-| Backend modules       | **CommonJS**                                                                                                                         |
-| Code style (Prettier) | Double quotes, semicolons, 2-space indent, trailing commas, 100-char lines                                                           |
-| Tests                 | **Set up now**: Vitest + Supertest (backend), Vitest + Testing Library (frontend)                                                    |
+| Topic | Decision |
+|---|---|
+| v1 code | **Delete in Phase 0**. v1 stays on `main` for reference |
+| Local database | Developer's **own MySQL** (no Docker). Connection via `.env` |
+| Fonts | **Baloo 2** for headings and brand, **Noto Sans** for body/UI text (both via `@fontsource`, both support Devanagari) |
+| Dark mode | **Light and dark from the start**. Default follows the **system setting**, with a Light / Dark / System toggle remembered per device |
+| Backend modules | **CommonJS** |
+| Code style (Prettier) | Double quotes, semicolons, 2-space indent, trailing commas, 100-char lines |
+| Tests | **Set up now**: Vitest + Supertest (backend), Vitest + Testing Library (frontend) |
+| Database | **MySQL 8** (8.4 LTS recommended), utf8mb4 / `utf8mb4_0900_ai_ci`. Not MariaDB |
+| API prefix | **`/api/v1`** (versioned for the future mobile app) |
+| Mobile readiness | The API follows the client compatibility rules in backend `docs/02-api-response-standard.md` |
+| Frontend language | **JavaScript** (`.js`/`.jsx`) |
+| Frontend `.env` | Removed from git and replaced by `.env.example`. Hosting sets `VITE_API_URL` |
+| Home page until Phase 2 | Branded placeholder. Light / Dark / System toggle in the header (public + dashboard) |
