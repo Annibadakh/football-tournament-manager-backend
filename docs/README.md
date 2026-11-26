@@ -11,6 +11,7 @@ Read these before starting work. They are the source of context for anyone (huma
 | [03-coding-standards.md](./03-coding-standards.md) | Coding philosophy, layered architecture, naming, comments | Active |
 | [04-project-structure.md](./04-project-structure.md) | Target folder layout, changes, and the old→new endpoint map | Active |
 | [05-business-requirements.md](./05-business-requirements.md) | Core business pillars: users and roles, tournaments, teams, payments, live | Agreed |
+| [06-setup-guide.md](./06-setup-guide.md) | Environment variables, migrations check, seed data, superadmin, first data from the app | Active |
 | [plans/v1-to-v2-gap-analysis.md](./plans/v1-to-v2-gap-analysis.md) | What v1 does vs what v2 needs (keep / change / new / remove) | Draft |
 | [plans/implementation-plan.md](./plans/implementation-plan.md) | Build phases, draft DB schema, dependency order | Draft |
 | [plans/future-feeds-and-cms.md](./plans/future-feeds-and-cms.md) | Home feeds + CMS (last phase) and the provisions earlier phases must store | Agreed |
