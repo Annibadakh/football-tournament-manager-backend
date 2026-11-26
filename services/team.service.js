@@ -202,6 +202,7 @@ const attachLatestPayments = async (teams, presented) => {
     latestByTeam[payment.teamId] ??= {
       id: payment.uuid,
       method: payment.method,
+      offlineMode: payment.offlineMode,
       status: payment.status,
       amount: Number(payment.amount),
       receiptNumber: payment.receiptNumber,

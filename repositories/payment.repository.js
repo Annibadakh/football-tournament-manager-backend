@@ -55,6 +55,7 @@ const findReceiptPaymentsByTeams = (teamIds) =>
           "uuid",
           "teamId",
           "method",
+          "offlineMode",
           "status",
           "amount",
           "receiptNumber",

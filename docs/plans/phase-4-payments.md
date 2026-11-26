@@ -1,6 +1,6 @@
 # Phase 4: Payments (module plan)
 
-Status: **In progress** (decisions confirmed 2026-11-28). Part of `plans/implementation-plan.md`.
+Status: **Done** (decisions confirmed 2026-11-28). Part of `plans/implementation-plan.md`.
 Goal: captains pay the entry fee online through Razorpay; organizers record offline payments. Each paid payment has a PDF receipt for the captain, the organizer and admins.
 
 ## Flow
@@ -48,3 +48,8 @@ Team AWAITING_PAYMENT
 - Refunds and cancellations inside the app.
 - Admin-wide payments report / settlement export.
 - Payments for other items (e.g. featured listings) reuse the same table with a `purpose`.
+
+## Outcome
+- **Backend**: `payments` table; Razorpay Orders (an open order is reused on retry); checkout-signature verification and a signed webhook (`payment.captured`, `order.paid`, `payment.failed`), both idempotent with an amount check; offline payments (amount, mode, reference) replace the bare confirm; late payments are kept as refund due; PDF receipts (pdfkit, `MDN-<year>-<id>`) for the captain, organizer and admins; the organizer team list includes each team's latest payment. Without keys, online payment is switched off. 40 unit tests; the 49-check Phase 4 e2e run (against a local mock of the Razorpay API) passes, along with the Phase 1–3 runs.
+- **Frontend**: Entry fee card on the team page: fee breakdown with the 2.36% convenience fee, Pay button (Razorpay Checkout loaded on demand), last failure reason, and receipts with View/Download. Organizers get "Record payment" (amount prefilled, mode, reference) on the team page and the Teams tab, which also shows each team's payment. New: `components/payment/*`, `services/payment.service`, `utils/razorpay`. 41 tests. Verified in Chromium with a stand-in Checkout: failed attempt → retry → paid → team confirmed → receipt view/download; organizer offline payment; phone + dark mode; the public sees no payment data.
+- **Owner setup**: Razorpay test keys in the backend `.env`, auto-capture on, and a webhook to `/api/v1/payments/webhook` once the API has a public URL (backend README).
