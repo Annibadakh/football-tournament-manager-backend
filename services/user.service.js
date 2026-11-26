@@ -6,6 +6,7 @@ const storageService = require("./storage.service");
 const tokenService = require("./token.service");
 const uploadService = require("./upload.service");
 const { toPositionResponse } = require("./position.service");
+const placeService = require("./place.service");
 const { hashPassword, verifyPassword } = require("./password.service");
 const ApiError = require("../utils/ApiError");
 const { buildPagination, buildPaginationMeta } = require("../utils/pagination");
@@ -37,7 +38,7 @@ const presentUser = async (user) => {
     isEmailVerified: Boolean(user.emailVerifiedAt),
     dateOfBirth: user.dateOfBirth,
     gender: user.gender,
-    city: user.city,
+    city: placeService.presentPlace(user.city),
     bio: user.bio,
     photoUrl: await storageService.getReadUrl(user.photoKey),
     positions,
@@ -63,14 +64,17 @@ const updateMyProfile = async (user, changes) => {
   const previousPhotoKey = user.photoKey;
   if (changes.photoKey) {
     await uploadService.assertUploadedFile(
-      user,
       UPLOAD_PURPOSE.PROFILE_PHOTO,
+      user.uuid,
       changes.photoKey,
       "photoKey",
     );
   }
 
-  await userRepository.updateUser(user, { ...changes, updatedBy: user.id });
+  const resolved = { ...changes };
+  if ("cityPlaceId" in changes)
+    resolved.cityPlaceId = await placeService.findPlaceIdByUuid(changes.cityPlaceId, "cityPlaceId");
+  await userRepository.updateUser(user, { ...resolved, updatedBy: user.id });
 
   const isPhotoReplaced =
     changes.photoKey !== undefined && previousPhotoKey && previousPhotoKey !== changes.photoKey;

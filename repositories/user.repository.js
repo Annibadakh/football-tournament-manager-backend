@@ -1,5 +1,7 @@
+const { escapeLike } = require("../utils/sql");
 const { Op } = require("sequelize");
-const { User, Position } = require("../models");
+const { User, Position, Place } = require("../models");
+const { PLACE_ATTRIBUTES } = require("./place.repository");
 
 const POSITION_INCLUDE = {
   model: Position,
@@ -13,11 +15,13 @@ const findUserById = (id, { transaction } = {}) => User.findByPk(id, { transacti
 const findUserByUuid = (uuid, { transaction } = {}) =>
   User.findOne({ where: { uuid }, transaction });
 
+const CITY_INCLUDE = { model: Place, as: "city", attributes: PLACE_ATTRIBUTES };
+
 const findUserByUuidWithPositions = (uuid) =>
-  User.findOne({ where: { uuid }, include: [POSITION_INCLUDE] });
+  User.findOne({ where: { uuid }, include: [POSITION_INCLUDE, CITY_INCLUDE] });
 
 const findUserByIdWithPositions = (id, { transaction } = {}) =>
-  User.findByPk(id, { include: [POSITION_INCLUDE], transaction });
+  User.findByPk(id, { include: [POSITION_INCLUDE, CITY_INCLUDE], transaction });
 
 const findUserByEmail = (email, { transaction, withPassword = false } = {}) =>
   (withPassword ? User.scope("withPassword") : User).findOne({ where: { email }, transaction });
@@ -31,9 +35,6 @@ const findUserByPhone = (phone, { transaction } = {}) =>
 const createUser = (data, { transaction } = {}) => User.create(data, { transaction });
 
 const updateUser = (user, changes, { transaction } = {}) => user.update(changes, { transaction });
-
-// Escapes % and _ so a search for "50%" doesn't match everything
-const escapeLike = (value) => value.replace(/[\\%_]/g, (char) => `\\${char}`);
 
 const findUsersPage = ({ search, accountRole, accountStatus, limit, offset, order }) => {
   const where = {};

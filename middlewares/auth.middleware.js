@@ -31,6 +31,20 @@ const authenticate = async (req, res, next) => {
   return next();
 };
 
+// Public routes that show more to managers (e.g. draft tournaments): attach the user when a valid token is sent
+const optionalAuthenticate = async (req, res, next) => {
+  const token = readBearerToken(req);
+  if (!token) return next();
+  try {
+    const payload = tokenService.verifyAccessToken(token);
+    const user = await userRepository.findUserByUuid(payload.sub);
+    if (user && user.accountStatus !== ACCOUNT_STATUS.BLOCKED) req.user = user;
+  } catch {
+    // An expired token on a public page just means "anonymous"
+  }
+  return next();
+};
+
 // "Verify to continue": logged-in but unverified accounts can only reach verification endpoints
 const requireVerified = (req, res, next) => {
   if (req.user?.accountStatus === ACCOUNT_STATUS.VERIFIED) return next();
@@ -51,4 +65,4 @@ const authorize =
     return next();
   };
 
-module.exports = { authenticate, requireVerified, authorize };
+module.exports = { authenticate, optionalAuthenticate, requireVerified, authorize };

@@ -33,7 +33,7 @@ const updateProfileSchema = z
     fullName: fullNameField,
     dateOfBirth: z.iso.date("Enter a valid date").nullable(),
     gender: z.enum(GENDER).nullable(),
-    city: z.string().trim().max(USER_RULES.CITY_MAX).nullable(),
+    cityPlaceId: z.uuid("Select a city from the suggestions").nullable(),
     bio: z.string().trim().max(USER_RULES.BIO_MAX).nullable(),
     photoKey: z.string().trim().min(1).max(255).nullable(),
   })

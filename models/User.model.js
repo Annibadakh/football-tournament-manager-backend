@@ -33,7 +33,7 @@ module.exports = (sequelize) => {
         allowNull: true,
         validate: { isIn: [Object.values(GENDER)] },
       },
-      city: { type: DataTypes.STRING(100), allowNull: true },
+      cityPlaceId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },
       bio: { type: DataTypes.STRING(500), allowNull: true },
       photoKey: { type: DataTypes.STRING(255), allowNull: true },
       lastLoginAt: { type: DataTypes.DATE, allowNull: true },
@@ -50,6 +50,7 @@ module.exports = (sequelize) => {
   );
 
   User.associate = (models) => {
+    User.belongsTo(models.Place, { foreignKey: "cityPlaceId", as: "city" });
     User.hasMany(models.UserPosition, { foreignKey: "userId", as: "userPositions" });
     User.belongsToMany(models.Position, {
       through: models.UserPosition,

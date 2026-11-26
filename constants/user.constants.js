@@ -40,7 +40,6 @@ const USER_RULES = Object.freeze({
   PASSWORD_MAX: 64,
   // Indian mobile numbers, stored without +91
   PHONE_REGEX: /^[6-9]\d{9}$/,
-  CITY_MAX: 100,
   BIO_MAX: 500,
   MAX_POSITIONS: 4,
   BCRYPT_ROUNDS: 12,

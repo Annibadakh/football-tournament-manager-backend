@@ -37,6 +37,14 @@ const SORT_ORDER = Object.freeze({
   DESC: "desc",
 });
 
+// Shared entity types for links between modules (CMS targets, notifications, deep links)
+const ENTITY_TYPE = Object.freeze({
+  TOURNAMENT: 1,
+  TEAM: 2,
+  PLAYER: 3,
+  MATCH: 4,
+});
+
 const REQUEST_BODY_LIMIT = "100kb";
 
 // Versioned so a future mobile app keeps working if v2 of the API is ever needed
@@ -49,4 +57,5 @@ module.exports = {
   SORT_ORDER,
   REQUEST_BODY_LIMIT,
   API_PREFIX,
+  ENTITY_TYPE,
 };

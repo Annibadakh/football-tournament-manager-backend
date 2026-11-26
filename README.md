@@ -41,6 +41,13 @@ Gmail allows about 500 emails per day. To switch provider later, change only the
 3. Create an IAM user (or role) limited to the bucket with `s3:PutObject`, `s3:GetObject` and `s3:DeleteObject` on `arn:aws:s3:::<bucket>/*`, and set its keys in `.env`.
 4. Set `AWS_S3_BUCKET` and `AWS_REGION`.
 
+## Locations (Google Places)
+1. In Google Cloud, enable billing and the **Places API (New)**.
+2. Create an API key restricted to the **Places API** and to your server's IP address.
+3. Set `GOOGLE_MAPS_API_KEY` in `.env`.
+
+The frontend never calls Google directly: it uses `GET /api/v1/places/autocomplete` and `POST /api/v1/places` on this API, so there is no browser key. Without a key in development, a small built-in list of Maharashtra places (Kopargaon, Shirdi, Pune, Mumbai, grounds…) is used.
+
 ## Scripts
 | Script | Purpose |
 |---|---|

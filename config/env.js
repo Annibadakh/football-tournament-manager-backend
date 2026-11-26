@@ -52,6 +52,8 @@ const envSchema = z.object({
   S3_ENDPOINT: z.url().optional(),
   S3_SIGNED_URL_TTL_SECONDS: z.coerce.number().int().positive().default(3600),
 
+  GOOGLE_MAPS_API_KEY: z.string().optional(),
+
   RATE_LIMIT_WINDOW_MS: z.coerce
     .number()
     .int()
@@ -64,7 +66,7 @@ const envSchema = z.object({
 // Email and file storage are optional while developing, mandatory in production
 const productionSchema = envSchema.superRefine((env, ctx) => {
   if (env.NODE_ENV !== "production") return;
-  ["SMTP_HOST", "SMTP_USER", "SMTP_PASS", "AWS_S3_BUCKET"].forEach((key) => {
+  ["SMTP_HOST", "SMTP_USER", "SMTP_PASS", "AWS_S3_BUCKET", "GOOGLE_MAPS_API_KEY"].forEach((key) => {
     if (!env[key])
       ctx.addIssue({ code: "custom", path: [key], message: "is required in production" });
   });
@@ -127,6 +129,7 @@ const config = Object.freeze({
     endpoint: env.S3_ENDPOINT,
     signedUrlTtlSeconds: env.S3_SIGNED_URL_TTL_SECONDS,
   }),
+  googleMapsApiKey: env.GOOGLE_MAPS_API_KEY,
   rateLimit: Object.freeze({
     windowMs: env.RATE_LIMIT_WINDOW_MS,
     max: env.RATE_LIMIT_MAX,
