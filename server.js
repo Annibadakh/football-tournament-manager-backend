@@ -1,64 +1,35 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const multer = require("multer");
-const sequelize = require("./config/database");
-const authRoutes = require("./routes/authRoutes");
-const dashboardRoutes = require("./routes/dashboard");
-const tournamentRoutes = require("./routes/tournamentRoutes");
-const teamRoutes = require("./routes/teamRoutes");
-const playerRoutes = require("./routes/playerRoutes");
-const matchRoutes = require("./routes/matchesRoutes");
-const operationRoutes = require('./routes/operationRoutes');
-const paymentRoute = require("./routes/payment");
+const config = require("./config/env");
+const logger = require("./config/logger");
+const app = require("./app");
+const { sequelize } = require("./models");
 
-const path = require("path");
+const SHUTDOWN_TIMEOUT_MS = 10000;
 
-const PORT = process.env.PORT || 6000;
+const startServer = async () => {
+  try {
+    await sequelize.authenticate();
+    logger.info("Database connected");
+  } catch (err) {
+    logger.fatal({ err }, "Unable to connect to the database");
+    process.exit(1);
+  }
 
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Store images in the uploads folder
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Rename file with timestamp
-  },
-});
-const upload = multer({ storage: storage });
-app.post("/api/upload-photo", upload.single("file"), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: "No file uploaded" });
-
-  const imageUrl = `/uploads/${req.file.filename}`;
-  res.json({ imageUrl });
-});
-
-app.use("/api/auth", authRoutes);
-app.use("/api/payment", paymentRoute);
-app.use("/api", dashboardRoutes);
-app.use("/api/tournament", tournamentRoutes);
-app.use("/api/team", teamRoutes);
-app.use("/api/player", playerRoutes);
-app.use('/api/match', matchRoutes);
-app.use('/api/operations', operationRoutes);
-
-
-app.get('/', (req, res) => {
-  res.send("from server side");
-});
-
-
-
-app.listen(PORT, async () => {
-    try {
-      await sequelize.authenticate();
-      // await sequelize.sync();
-      console.log(`Server running on http://localhost:${PORT}`);
-    } catch (error) {
-      console.error("Unable to connect to DB:", error);
-    }
+  const server = app.listen(config.port, () => {
+    logger.info(`Server running on http://localhost:${config.port} (${config.env})`);
   });
+
+  // Finish in-flight requests and close DB connections before exiting
+  const shutdown = (signal) => {
+    logger.info(`${signal} received, shutting down`);
+    server.close(async () => {
+      await sequelize.close();
+      process.exit(0);
+    });
+    setTimeout(() => process.exit(1), SHUTDOWN_TIMEOUT_MS).unref();
+  };
+
+  process.on("SIGINT", shutdown);
+  process.on("SIGTERM", shutdown);
+};
+
+startServer();

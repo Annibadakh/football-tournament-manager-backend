@@ -1,13 +1,18 @@
 const { Sequelize } = require("sequelize");
-require("dotenv").config();
+const config = require("./env");
+const logger = require("./logger");
 
-const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
-  host: process.env.DB_HOST,
+const sequelize = new Sequelize(config.db.name, config.db.user, config.db.password, {
+  host: config.db.host,
+  port: config.db.port,
   dialect: "mysql",
+  timezone: "+00:00",
+  logging: config.db.logging ? (sql) => logger.debug(sql) : false,
+  define: {
+    underscored: true,
+    timestamps: true,
+  },
+  pool: { max: 10, min: 0, idle: 10000 },
 });
-
-sequelize.authenticate()
-  .then(() => console.log("Database connected"))
-  .catch((err) => console.error("Error:", err));
 
 module.exports = sequelize;
