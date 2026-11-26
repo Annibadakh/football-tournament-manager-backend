@@ -149,7 +149,7 @@ if (match.status === MATCH_STATUS.COMPLETED) {
 
 ## Validation middleware
 - One common middleware, `middlewares/validate.js`: `validate({ body, params, query })` takes zod schemas, parses each part, and fails with `VALIDATION_ERROR` plus field errors.
-- Controllers read the **parsed** values from `req.validated.{body,params,query}` (Express 5 makes `req.query` read-only), never `req.body` directly. Services receive (with coercion, defaults and unknown keys stripped), never the raw `req.body`.
+- Controllers read the **parsed** values from `req.validated.{body,params,query}` (Express 5 makes `req.query` read-only), never `req.body` directly. Parsed values have coercion and defaults applied and unknown keys stripped. Services receive these plain values, never `req`.
 - No manual `if (!field)` checks in controllers.
 
 ## Database rules
