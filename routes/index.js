@@ -4,6 +4,8 @@ const healthRoutes = require("./health.routes");
 const inviteRoutes = require("./invite.routes");
 const meRoutes = require("./me.routes");
 const placeRoutes = require("./place.routes");
+const playerRoutes = require("./player.routes");
+const teamRoutes = require("./team.routes");
 const positionRoutes = require("./position.routes");
 const ruleRoutes = require("./rule.routes");
 const tournamentRoutes = require("./tournament.routes");
@@ -24,6 +26,8 @@ router.use("/uploads", uploadRoutes);
 router.use("/places", placeRoutes);
 router.use("/rules", ruleRoutes);
 router.use("/tournaments", tournamentRoutes);
+router.use("/teams", teamRoutes);
+router.use("/players", playerRoutes);
 router.get("/tournament-categories", tournamentController.listCategories);
 
 module.exports = router;

@@ -45,6 +45,9 @@ const ENTITY_TYPE = Object.freeze({
   MATCH: 4,
 });
 
+// Business dates (registration deadlines, "today") are evaluated in Indian time
+const APP_TIMEZONE = "Asia/Kolkata";
+
 const REQUEST_BODY_LIMIT = "100kb";
 
 // Versioned so a future mobile app keeps working if v2 of the API is ever needed
@@ -58,4 +61,5 @@ module.exports = {
   REQUEST_BODY_LIMIT,
   API_PREFIX,
   ENTITY_TYPE,
+  APP_TIMEZONE,
 };

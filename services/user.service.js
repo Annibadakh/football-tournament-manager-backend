@@ -188,6 +188,19 @@ const resendAccountInvite = async (actor, userUuid) => {
   await inviteService.sendAccountSetupEmail(target, actor, inviteUrl);
 };
 
+// A verified player picked from search (userId) or a guest added by name + email
+const resolveInvitee = async ({ userId, fullName, email }, actor, field, { transaction } = {}) => {
+  if (!userId) return findOrCreateGuest({ fullName, email }, actor, { transaction });
+  const user = await userRepository.findUserByUuid(userId, { transaction });
+  const isVerifiedPlayer =
+    user?.accountRole === ACCOUNT_ROLE.MEMBER && user.accountStatus === ACCOUNT_STATUS.VERIFIED;
+  if (!isVerifiedPlayer)
+    throw ApiError.badRequest("Choose a verified player", [
+      { field, message: "Choose a verified player" },
+    ]);
+  return user;
+};
+
 /**
  * Used by squad/staff flows (Phase 3): reuses an unclaimed account or creates a guest.
  * A verified account is never reused silently (business rule 2.3).
@@ -228,4 +241,5 @@ module.exports = {
   updateUserBlockStatus,
   resendAccountInvite,
   findOrCreateGuest,
+  resolveInvitee,
 };

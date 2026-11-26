@@ -1,6 +1,7 @@
-// TEAM_JOIN and STAFF_ASSIGN are added in Phase 3
 const INVITE_TYPE = Object.freeze({
   ACCOUNT_SETUP: 1,
+  TEAM_JOIN: 2,
+  STAFF_ASSIGN: 3,
 });
 
 const INVITE_STATUS = Object.freeze({
@@ -8,6 +9,7 @@ const INVITE_STATUS = Object.freeze({
   ACCEPTED: 2,
   EXPIRED: 3,
   REVOKED: 4,
+  DECLINED: 5,
 });
 
 const INVITE_TTL_DAYS = 7;

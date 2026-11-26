@@ -1,4 +1,5 @@
 const { escapeLike } = require("../utils/sql");
+const { ACCOUNT_ROLE, ACCOUNT_STATUS } = require("../constants/user.constants");
 const { Op } = require("sequelize");
 const { User, Position, Place } = require("../models");
 const { PLACE_ATTRIBUTES } = require("./place.repository");
@@ -66,7 +67,23 @@ const findUsersPage = ({ search, accountRole, accountStatus, limit, offset, orde
   });
 };
 
+// Verified players only; contact details are never selected
+const findVerifiedPlayersPage = ({ search, limit, offset }) => {
+  const where = { accountRole: ACCOUNT_ROLE.MEMBER, accountStatus: ACCOUNT_STATUS.VERIFIED };
+  if (search) where.fullName = { [Op.like]: `%${escapeLike(search)}%` };
+  return User.findAndCountAll({
+    where,
+    attributes: ["id", "uuid", "fullName", "photoKey", "accountStatus", "dateOfBirth"],
+    include: [POSITION_INCLUDE, CITY_INCLUDE],
+    order: [["fullName", "ASC"]],
+    limit,
+    offset,
+    distinct: true,
+  });
+};
+
 module.exports = {
+  findVerifiedPlayersPage,
   findUserById,
   findUserByUuid,
   findUserByUuidWithPositions,

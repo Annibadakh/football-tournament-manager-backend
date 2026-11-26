@@ -6,6 +6,12 @@ module.exports = (sequelize) => {
     "Invite",
     {
       id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
+      uuid: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+        unique: true,
+      },
       tokenHash: { type: DataTypes.CHAR(64), allowNull: false, unique: true },
       type: {
         type: DataTypes.TINYINT.UNSIGNED,

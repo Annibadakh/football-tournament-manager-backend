@@ -1,5 +1,7 @@
 const express = require("express");
 const tournamentController = require("../controllers/tournament.controller");
+const teamController = require("../controllers/team.controller");
+const teamSchemas = require("../validations/team.schema");
 const {
   authenticate,
   authorize,
@@ -70,6 +72,41 @@ router.put(
   ...signedIn,
   validate({ ...params, body: schemas.replaceTournamentRulesSchema }),
   tournamentController.replaceTournamentRules,
+);
+
+// Teams and team requests
+router.get(
+  "/:tournamentId/teams",
+  optionalAuthenticate,
+  validate({ ...params, query: teamSchemas.listTeamsQuerySchema }),
+  teamController.listTournamentTeams,
+);
+router.post(
+  "/:tournamentId/teams",
+  ...signedIn,
+  validate({ ...params, body: teamSchemas.addTeamSchema }),
+  teamController.addTeam,
+);
+router.post(
+  "/:tournamentId/team-requests",
+  ...signedIn,
+  validate({ ...params, body: teamSchemas.teamRequestSchema }),
+  teamController.requestTeam,
+);
+
+// Scorers and media operators
+router.get("/:tournamentId/staff", ...signedIn, validate(params), teamController.listStaff);
+router.post(
+  "/:tournamentId/staff",
+  ...signedIn,
+  validate({ ...params, body: teamSchemas.inviteStaffSchema }),
+  teamController.inviteStaff,
+);
+router.delete(
+  "/:tournamentId/staff/:staffId",
+  ...signedIn,
+  validate({ params: teamSchemas.staffParamsSchema }),
+  teamController.removeStaff,
 );
 
 module.exports = router;
