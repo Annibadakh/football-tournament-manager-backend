@@ -4,10 +4,12 @@ const { z } = require("zod");
 // Load .env once for the whole app; real env vars take precedence
 dotenv.config({ quiet: true });
 
-const booleanString = z
-  .enum(["true", "false"])
-  .default("false")
-  .transform((value) => value === "true");
+// "true"/"false" env strings → booleans, with a per-variable default
+const booleanFlag = (defaultValue) =>
+  z
+    .enum(["true", "false"])
+    .default(defaultValue ? "true" : "false")
+    .transform((value) => value === "true");
 
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
@@ -28,7 +30,27 @@ const envSchema = z.object({
   DB_NAME: z.string().min(1),
   DB_USER: z.string().min(1),
   DB_PASSWORD: z.string().default(""),
-  DB_LOGGING: booleanString,
+  DB_LOGGING: booleanFlag(false),
+
+  APP_URL: z.url().default("http://localhost:5173"),
+
+  JWT_ACCESS_SECRET: z.string().min(32, "must be at least 32 characters"),
+  JWT_ACCESS_EXPIRES_IN: z.string().default("15m"),
+  REFRESH_TOKEN_TTL_DAYS: z.coerce.number().int().positive().default(30),
+  COOKIE_SAME_SITE: z.enum(["lax", "strict", "none"]).default("lax"),
+
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.coerce.number().int().positive().default(465),
+  SMTP_SECURE: booleanFlag(true),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASS: z.string().optional(),
+  MAIL_FROM: z.string().default("Maidaan <maidaan.app@gmail.com>"),
+
+  AWS_REGION: z.string().default("ap-south-1"),
+  AWS_S3_BUCKET: z.string().optional(),
+  // Only for local emulators (MinIO/moto); leave empty for real AWS
+  S3_ENDPOINT: z.url().optional(),
+  S3_SIGNED_URL_TTL_SECONDS: z.coerce.number().int().positive().default(3600),
 
   RATE_LIMIT_WINDOW_MS: z.coerce
     .number()
@@ -39,7 +61,21 @@ const envSchema = z.object({
   AUTH_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(20),
 });
 
-const parsed = envSchema.safeParse(process.env);
+// Email and file storage are optional while developing, mandatory in production
+const productionSchema = envSchema.superRefine((env, ctx) => {
+  if (env.NODE_ENV !== "production") return;
+  ["SMTP_HOST", "SMTP_USER", "SMTP_PASS", "AWS_S3_BUCKET"].forEach((key) => {
+    if (!env[key])
+      ctx.addIssue({ code: "custom", path: [key], message: "is required in production" });
+  });
+});
+
+// Empty values from .env (e.g. "S3_ENDPOINT=") mean "not set", not an empty string
+const rawEnv = Object.fromEntries(
+  Object.entries(process.env).map(([key, value]) => [key, value === "" ? undefined : value]),
+);
+
+const parsed = productionSchema.safeParse(rawEnv);
 
 // Fail fast with a readable list instead of crashing later on undefined config
 if (!parsed.success) {
@@ -66,6 +102,30 @@ const config = Object.freeze({
     user: env.DB_USER,
     password: env.DB_PASSWORD,
     logging: env.DB_LOGGING,
+  }),
+  appUrl: env.APP_URL.replace(/\/$/, ""),
+  auth: Object.freeze({
+    accessSecret: env.JWT_ACCESS_SECRET,
+    accessExpiresIn: env.JWT_ACCESS_EXPIRES_IN,
+    refreshTokenTtlDays: env.REFRESH_TOKEN_TTL_DAYS,
+    cookieSameSite: env.COOKIE_SAME_SITE,
+    cookieSecure: env.NODE_ENV === "production" || env.COOKIE_SAME_SITE === "none",
+  }),
+  mail: Object.freeze({
+    isConfigured: Boolean(env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS),
+    host: env.SMTP_HOST,
+    port: env.SMTP_PORT,
+    secure: env.SMTP_SECURE,
+    user: env.SMTP_USER,
+    pass: env.SMTP_PASS,
+    from: env.MAIL_FROM,
+  }),
+  storage: Object.freeze({
+    isConfigured: Boolean(env.AWS_S3_BUCKET),
+    region: env.AWS_REGION,
+    bucket: env.AWS_S3_BUCKET,
+    endpoint: env.S3_ENDPOINT,
+    signedUrlTtlSeconds: env.S3_SIGNED_URL_TTL_SECONDS,
   }),
   rateLimit: Object.freeze({
     windowMs: env.RATE_LIMIT_WINDOW_MS,

@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const express = require("express");
+const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const helmet = require("helmet");
 const pinoHttp = require("pino-http");
@@ -30,6 +31,7 @@ app.use(
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(cors({ origin: config.corsOrigins, credentials: true }));
 app.use(express.json({ limit: REQUEST_BODY_LIMIT }));
+app.use(cookieParser());
 
 app.use(API_PREFIX, apiLimiter, routes);
 

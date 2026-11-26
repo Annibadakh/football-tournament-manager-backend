@@ -10,6 +10,7 @@ export default defineConfig({
       DB_HOST: "127.0.0.1",
       DB_NAME: "maidaan_test",
       DB_USER: "test",
+      JWT_ACCESS_SECRET: "test-secret-that-is-at-least-32-characters-long",
     },
   },
 });

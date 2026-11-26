@@ -17,25 +17,29 @@
     "db:seed": "sequelize-cli db:seed:all",
     "db:reset": "sequelize-cli db:migrate:undo:all && sequelize-cli db:migrate && sequelize-cli db:seed:all",
     "make:migration": "sequelize-cli migration:generate --name",
-    "make:seeder": "sequelize-cli seed:generate --name"
+    "make:seeder": "sequelize-cli seed:generate --name",
+    "create:superadmin": "node scripts/createSuperadmin.js"
   },
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1178.0",
+    "@aws-sdk/s3-presigned-post": "^3.1178.0",
+    "@aws-sdk/s3-request-presigner": "^3.1178.0",
     "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^18.0.10",
     "express": "^5.3.0",
     "express-rate-limit": "^8.7.5",
     "helmet": "^8.3.0",
     "jsonwebtoken": "^9.0.3",
-    "multer": "^2.5.0",
     "mysql2": "^3.24.6",
+    "nodemailer": "^10.6.1",
     "pino": "^10.4.0",
     "pino-http": "^11.0.0",
     "razorpay": "^2.9.8",
     "sequelize": "^6.37.8",
-    "sharp": "^0.35.5",
     "zod": "^4.6.7"
   },
   "devDependencies": {
