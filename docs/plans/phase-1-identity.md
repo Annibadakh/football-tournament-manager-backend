@@ -1,6 +1,6 @@
 # Phase 1: Identity & Accounts (module plan)
 
-Status: **In progress** (decisions confirmed 2026-11-26). Part of `plans/implementation-plan.md`.
+Status: **Done** (2026-11-26). Part of `plans/implementation-plan.md`.
 Goal: everyone can have an account; admins can create admins and organizers; guests can exist and claim their account. No tournaments yet.
 
 ## Scope
@@ -91,3 +91,12 @@ The Redux auth slice gets session bootstrap on app load (silent refresh), auto-r
 | First superadmin | **CLI command** `npm run create:superadmin` (prompts for name, email, password) |
 | Unclaimed accounts | `account_status = GUEST` means "created by someone else, not yet claimed" (guest players, and admins/organizers before they accept their invite) |
 | Sign up with a guest email | Allowed: the same row is updated and must be verified by email OTP (business rule 2.3). Verified emails get `CONFLICT` |
+
+## Outcome
+- **Backend** (`/api/v1`): every endpoint in the API table is built. 18 unit tests pass, plus a 52-check end-to-end run against MySQL 8 and a local S3 emulator (register, OTP, verify, profile, positions, S3 upload, refresh rotation and reuse detection, mobile refresh via body, password reset, invites, roles, block/unblock, change password, logout).
+- **Frontend**: login, sign up, verify (OTP + phone), forgot/reset password, accept invite, role-based dashboard, profile (photo, details, positions), security (change password, log out everywhere), and users admin (server-side table, filters, invite, block, resend invite). 24 tests pass, lint is clean. Verified in Chromium end to end against the real API.
+- **Session handling**: silent refresh on app load, automatic refresh-and-retry on 401 (one refresh shared by parallel requests), and a "verify to continue" redirect.
+- **Additions**: `Avatar`, `Textarea`, `PhoneInput` (+91 prefix, stores 10 digits), `useForm` (plain-state form helper: values, errors, zod validation, API field errors) and `useCountdown`.
+- **Fix found during testing**: `browser-image-compression` loaded its web worker from cdn.jsdelivr.net by default. It is now bundled locally (`libURL`).
+- **Known limitation**: two browser tabs refreshing at the same instant can trip refresh-token reuse detection and sign the user out. This is rare. Revisit if users report it.
+- **Owner setup needed**: Gmail app password, S3 bucket + CORS + IAM user (see backend README), then `npm run create:superadmin`.

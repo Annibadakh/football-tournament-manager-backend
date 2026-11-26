@@ -46,8 +46,10 @@ const issueRefreshToken = async ({ userId, familyId, context }, { transaction } 
   return { token, record };
 };
 
+// Every new session (login, sign-up, invite acceptance) counts as a login
 const createSession = async (user, context, { transaction } = {}) => {
   const { token } = await issueRefreshToken({ userId: user.id, context }, { transaction });
+  await userRepository.updateUser(user, { lastLoginAt: new Date() }, { transaction });
   return { accessToken: signAccessToken(user), refreshToken: token };
 };
 

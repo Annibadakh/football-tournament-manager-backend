@@ -62,7 +62,6 @@ const login = async ({ email, password }, context) => {
     throw ApiError.forbidden("Your account has been blocked. Please contact support.");
   }
 
-  await userRepository.updateUser(user, { lastLoginAt: new Date() });
   const session = await tokenService.createSession(user, context);
   return { user, session };
 };
