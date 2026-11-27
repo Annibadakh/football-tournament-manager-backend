@@ -95,7 +95,11 @@ const findPotmMatches = ({ userId, tournamentId }) =>
 
 const AWARD_INCLUDES = [
   { model: Team, as: "team", attributes: TEAM_ATTRIBUTES },
-  { model: User, as: "player", attributes: ["id", "uuid", "fullName", "photoKey"] },
+  {
+    model: User,
+    as: "player",
+    attributes: ["id", "uuid", "fullName", "photoKey", "accountStatus"],
+  },
   { model: Tournament, as: "tournament", attributes: TOURNAMENT_ATTRIBUTES },
 ];
 

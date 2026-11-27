@@ -14,7 +14,7 @@ const {
 const { MEMBER_STATUS, STAFF_ROLE, STAFF_STATUS } = require("../constants/team.constants");
 const { MATCH_EVENT_TYPE, MATCH_STATUS } = require("../constants/match.constants");
 
-const PERSON_ATTRIBUTES = ["id", "uuid", "fullName", "photoKey"];
+const PERSON_ATTRIBUTES = ["id", "uuid", "fullName", "photoKey", "accountStatus"];
 
 const EVENT_INCLUDES = [
   { model: User, as: "player", attributes: PERSON_ATTRIBUTES },

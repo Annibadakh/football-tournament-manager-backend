@@ -11,6 +11,7 @@ const {
 } = require("./tournamentAccess.service");
 const { matchSettingsOf, presentMatch } = require("./fixture.service");
 const ApiError = require("../utils/ApiError");
+const { ACCOUNT_STATUS } = require("../constants/user.constants");
 const ml = require("../utils/matchLogic");
 const { TOURNAMENT_FORMAT, TOURNAMENT_STATUS } = require("../constants/tournament.constants");
 const {
@@ -39,7 +40,13 @@ const fieldError = (field, message) => ApiError.badRequest(message, [{ field, me
 
 // ---------- presenters ----------
 
-const presentPerson = (user) => user && { id: user.uuid, fullName: user.fullName };
+// isVerified tells the UI whether a public profile exists
+const presentPerson = (user) =>
+  user && {
+    id: user.uuid,
+    fullName: user.fullName,
+    isVerified: user.accountStatus === ACCOUNT_STATUS.VERIFIED,
+  };
 
 const presentEvent = (event) => ({
   id: event.uuid,
@@ -590,6 +597,7 @@ const getMatchDetail = async (viewer, matchUuid) => {
     potm: potm && {
       id: potm.uuid,
       fullName: potm.fullName,
+      isVerified: potm.accountStatus === ACCOUNT_STATUS.VERIFIED,
       photoUrl: await storageService.getReadUrl(potm.photoKey),
     },
     tournament: {

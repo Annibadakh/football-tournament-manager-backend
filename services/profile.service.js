@@ -163,7 +163,11 @@ const getTeamStats = async (viewer, teamUuid) => {
     .sort((a, b) => b[1] - a[1])
     .slice(0, TOP_TEAM_SCORERS)
     .map(([userId, goals]) => ({
-      player: { id: memberById.get(userId).uuid, fullName: memberById.get(userId).fullName },
+      player: {
+        id: memberById.get(userId).uuid,
+        fullName: memberById.get(userId).fullName,
+        isVerified: memberById.get(userId).accountStatus === ACCOUNT_STATUS.VERIFIED,
+      },
       goals,
     }));
 

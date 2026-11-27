@@ -13,6 +13,7 @@ const { getStandings } = require("./live.service");
 const ApiError = require("../utils/ApiError");
 const { individualAwards, teamPlacings } = require("../utils/awards");
 const { AWARD_TYPE } = require("../constants/award.constants");
+const { ACCOUNT_STATUS } = require("../constants/user.constants");
 const { MATCH_STAGE } = require("../constants/match.constants");
 const { MEMBER_STATUS, TEAM_STATUS } = require("../constants/team.constants");
 
@@ -32,6 +33,7 @@ const presentAward = async (award) => ({
   player: award.player && {
     id: award.player.uuid,
     fullName: award.player.fullName,
+    isVerified: award.player.accountStatus === ACCOUNT_STATUS.VERIFIED,
     photoUrl: await storageService.getReadUrl(award.player.photoKey),
   },
   tournament: award.tournament && {
