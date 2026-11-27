@@ -1,5 +1,6 @@
 const express = require("express");
 const paymentController = require("../controllers/payment.controller");
+const profileController = require("../controllers/profile.controller");
 const teamController = require("../controllers/team.controller");
 const {
   authenticate,
@@ -16,6 +17,7 @@ const team = { params: schemas.teamIdParamSchema };
 const member = { params: schemas.memberParamsSchema };
 
 router.get("/:teamId", optionalAuthenticate, validate(team), teamController.getTeam);
+router.get("/:teamId/stats", optionalAuthenticate, validate(team), profileController.getTeamStats);
 router.patch(
   "/:teamId",
   ...signedIn,

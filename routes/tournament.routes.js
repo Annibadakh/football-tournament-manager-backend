@@ -2,6 +2,8 @@ const express = require("express");
 const tournamentController = require("../controllers/tournament.controller");
 const matchController = require("../controllers/match.controller");
 const streamController = require("../controllers/stream.controller");
+const profileController = require("../controllers/profile.controller");
+const profileSchemas = require("../validations/profile.schema");
 const streamSchemas = require("../validations/stream.schema");
 const teamController = require("../controllers/team.controller");
 const matchSchemas = require("../validations/match.schema");
@@ -200,6 +202,26 @@ router.post(
   ...signedIn,
   validate({ ...params, body: streamSchemas.createStreamSchema }),
   streamController.createStream,
+);
+
+// ---------- awards & exports ----------
+router.get(
+  "/:tournamentId/awards",
+  optionalAuthenticate,
+  validate(params),
+  profileController.listAwards,
+);
+router.post(
+  "/:tournamentId/awards",
+  ...signedIn,
+  validate({ ...params, body: profileSchemas.customAwardSchema }),
+  profileController.createAward,
+);
+router.get(
+  "/:tournamentId/exports/:kind.pdf",
+  optionalAuthenticate,
+  validate({ params: profileSchemas.exportParamSchema, query: profileSchemas.exportQuerySchema }),
+  profileController.downloadExport,
 );
 
 module.exports = router;

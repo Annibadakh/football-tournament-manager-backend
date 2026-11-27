@@ -16,6 +16,9 @@ const {
 const ApiError = require("../utils/ApiError");
 const { buildPagination, buildPaginationMeta } = require("../utils/pagination");
 const { matchSettingsOf } = require("./fixture.service");
+const awardService = require("./award.service");
+const { Match } = require("../models");
+const { MATCH_STATUS } = require("../constants/match.constants");
 const {
   ADMIN_ONLY_FIELDS,
   NEAR_ME,
@@ -279,6 +282,11 @@ const changeTournamentStatus = async (actor, identifier, { status }) => {
     ]);
   }
   if (status === TOURNAMENT_STATUS.REGISTRATION_OPEN) assertReadyForRegistration(tournament);
+  if (
+    status === TOURNAMENT_STATUS.COMPLETED &&
+    (await Match.count({ where: { tournamentId: tournament.id, status: MATCH_STATUS.LIVE } }))
+  )
+    throw ApiError.conflict("Finish or cancel the live matches before completing the tournament");
 
   // publishedAt records the first time the tournament went public
   const publishedAt =
@@ -288,6 +296,9 @@ const changeTournamentStatus = async (actor, identifier, { status }) => {
     publishedAt,
     updatedBy: actor.id,
   });
+  // Champion, Golden Boot, … are calculated when the tournament is completed
+  if (status === TOURNAMENT_STATUS.COMPLETED)
+    await awardService.recalculateAutomaticAwards(tournament);
   return presentTournament(await tournamentRepository.findTournamentById(tournament.id));
 };
 

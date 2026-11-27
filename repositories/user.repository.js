@@ -68,9 +68,12 @@ const findUsersPage = ({ search, accountRole, accountStatus, limit, offset, orde
 };
 
 // Verified players only; contact details are never selected
-const findVerifiedPlayersPage = ({ search, limit, offset }) => {
+// Directory / squad search; userIds narrows to players with a given position
+const findVerifiedPlayersPage = ({ search, cityPlaceId, userIds, limit, offset }) => {
   const where = { accountRole: ACCOUNT_ROLE.MEMBER, accountStatus: ACCOUNT_STATUS.VERIFIED };
   if (search) where.fullName = { [Op.like]: `%${escapeLike(search)}%` };
+  if (cityPlaceId) where.cityPlaceId = cityPlaceId;
+  if (userIds) where.id = userIds;
   return User.findAndCountAll({
     where,
     attributes: ["id", "uuid", "fullName", "photoKey", "accountStatus", "dateOfBirth"],

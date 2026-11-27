@@ -86,11 +86,12 @@ const inviteStaffSchema = z.object({
   person: personSchema,
 });
 
-const playerSearchQuerySchema = paginationQuerySchema.pick({
-  page: true,
-  pageSize: true,
-  search: true,
-});
+const playerSearchQuerySchema = paginationQuerySchema
+  .pick({ page: true, pageSize: true, search: true })
+  .extend({
+    cityId: z.uuid().optional(),
+    positionId: z.coerce.number().int().positive().optional(),
+  });
 
 const invitationParamSchema = z.object({ inviteId: z.uuid("Invalid invitation id") });
 
