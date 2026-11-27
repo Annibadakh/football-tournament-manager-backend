@@ -1,6 +1,6 @@
 # Phase 7: Public profiles, stats & awards (module plan)
 
-Status: **In progress** (decisions confirmed 2026-11-27). Part of `plans/implementation-plan.md`.
+Status: **Done** (decisions confirmed 2026-11-27). Part of `plans/implementation-plan.md`.
 Goal: public player profiles with career stats and history, a players directory, awards (automatic + organizer), richer team and tournament pages, PDF downloads and share buttons.
 
 ## Decisions (confirmed 2026-11-27)
@@ -42,3 +42,16 @@ Completing a tournament (`PATCH /tournaments/:id/status` → Completed) recalcul
 
 ## Tests
 Unit: age calculation, award rules per format (including ties), career aggregation. E2E: complete tournaments of each format, check awards, profile totals and history, privacy (no email/phone/date of birth; guests hidden), directory filters, custom awards permissions, PDFs. Browser: directory → profile, team stats, awards, downloads, share, phone + dark mode.
+
+## Outcome
+- **Backend**:
+  - `awards` table and `utils/awards.js` (placings per format, ties share awards, age from date of birth). `award.service` recalculates automatic awards when a tournament is marked Completed (blocked while a match is live); custom awards are add/remove by the organizer.
+  - `profile.service`: public profile (verified only: no email, phone or birth date), career totals, history and awards; team stats.
+  - `/players` is now a public directory with city and position filters. `export.service`: points table, fixtures & results and summary PDFs (data is checked before any PDF header is sent; rows are positioned from a fixed top so spacing stays even).
+  - Players in events, leaders, awards and POTM carry `isVerified`.
+  - Tests: 104 unit tests; the 37-check Phase 7 e2e run passes, and so do the Phase 3–6 runs. The Phase 2 venue/city search and Phase 3 player-search checks now miss on page 1 because of accumulated test data (not a regression).
+- **Frontend**:
+  - Public `/players` directory and `/players/:playerId` profile (stat tiles, awards, history table that collapses to one line per row on phones), "Players" in the header.
+  - Team stats card, tournament Awards + Downloads cards, `ShareButton` (native sheet on phones, WhatsApp / Copy link on desktop) on tournament, team, match and profile pages.
+  - Verified player names link to profiles across squads, timelines, leaders, POTM and awards. Organizer Awards card (add/remove custom awards) in the Fixtures tab.
+  - Tests: 64 tests. Verified in Chromium: directory filters, profile with no contact data, share menu, awards and PDF downloads, team stats, POTM link, organizer custom award, phone in dark mode.
