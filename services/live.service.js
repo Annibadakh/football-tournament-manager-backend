@@ -3,6 +3,7 @@ const liveRepository = require("../repositories/live.repository");
 const matchRepository = require("../repositories/match.repository");
 const tournamentRepository = require("../repositories/tournament.repository");
 const storageService = require("./storage.service");
+const streamService = require("./stream.service");
 const {
   assertViewable,
   canManageTournament,
@@ -578,9 +579,10 @@ const cancelMatch = async (actor, matchUuid) => {
 const getMatchDetail = async (viewer, matchUuid) => {
   const { match, tournament } = await loadMatch(matchUuid);
   assertViewable(viewer, tournament);
-  const [state, potm] = await Promise.all([
+  const [state, potm, stream] = await Promise.all([
     liveState(match, tournament),
     match.potmUserId ? sequelize.models.User.findByPk(match.potmUserId) : null,
+    streamService.getMatchStream(match, tournament),
   ]);
   return {
     ...presentMatch(match),
@@ -597,6 +599,7 @@ const getMatchDetail = async (viewer, matchUuid) => {
       status: tournament.status,
     },
     settings: matchSettingsOf(tournament),
+    stream,
     canScore: await canScore(viewer, tournament),
   };
 };

@@ -1,6 +1,8 @@
 const express = require("express");
 const tournamentController = require("../controllers/tournament.controller");
 const matchController = require("../controllers/match.controller");
+const streamController = require("../controllers/stream.controller");
+const streamSchemas = require("../validations/stream.schema");
 const teamController = require("../controllers/team.controller");
 const matchSchemas = require("../validations/match.schema");
 const teamSchemas = require("../validations/team.schema");
@@ -184,6 +186,20 @@ router.get(
   ...signedIn,
   validate({ ...params, query: matchSchemas.noticesQuerySchema }),
   matchController.listCardNotices,
+);
+
+// ---------- streams ----------
+router.get(
+  "/:tournamentId/streams",
+  optionalAuthenticate,
+  validate(params),
+  streamController.listStreams,
+);
+router.post(
+  "/:tournamentId/streams",
+  ...signedIn,
+  validate({ ...params, body: streamSchemas.createStreamSchema }),
+  streamController.createStream,
 );
 
 module.exports = router;

@@ -60,6 +60,8 @@ const envSchema = z.object({
   // Only for a local mock gateway in development/test; never set in production
   RAZORPAY_API_URL: z.url().optional(),
   // Platform convenience fee on online entry-fee payments (2% gateway + 18% GST)
+  // YouTube oEmbed (public, no key); overridable only for local tests
+  YOUTUBE_OEMBED_URL: z.url().default("https://www.youtube.com/oembed"),
   CONVENIENCE_FEE_PERCENT: z.coerce.number().min(0).max(10).default(2.36),
 
   RATE_LIMIT_WINDOW_MS: z.coerce
@@ -153,6 +155,7 @@ const config = Object.freeze({
     signedUrlTtlSeconds: env.S3_SIGNED_URL_TTL_SECONDS,
   }),
   googleMapsApiKey: env.GOOGLE_MAPS_API_KEY,
+  youtube: Object.freeze({ oembedUrl: env.YOUTUBE_OEMBED_URL }),
   payments: Object.freeze({
     isConfigured: Boolean(env.RAZORPAY_KEY_ID && env.RAZORPAY_KEY_SECRET),
     keyId: env.RAZORPAY_KEY_ID,
