@@ -3,7 +3,6 @@ const matchRepository = require("../repositories/match.repository");
 const teamRepository = require("../repositories/team.repository");
 const tournamentRepository = require("../repositories/tournament.repository");
 const {
-  assertViewable,
   canManageTournament,
   findManageableTournament,
   findViewableTournament,
@@ -684,20 +683,6 @@ const listMatches = async (viewer, tournamentId, filters) => {
   return matches.map(presentMatch);
 };
 
-const getMatch = async (viewer, matchUuid) => {
-  const match = await matchRepository.findMatchByUuid(matchUuid);
-  if (!match) throw ApiError.notFound("Match not found");
-  const owner = assertViewable(
-    viewer,
-    await tournamentRepository.findTournamentById(match.tournamentId),
-  );
-  return {
-    ...presentMatch(match),
-    tournament: { id: owner.uuid, slug: owner.slug, name: owner.name, status: owner.status },
-    settings: matchSettingsOf(owner),
-  };
-};
-
 // Knockout rounds in order, for the bracket view
 const getBracket = async (viewer, tournamentId) => {
   const tournament = await findViewableTournament(viewer, tournamentId);
@@ -728,6 +713,5 @@ module.exports = {
   updateMatch,
   deleteMatch,
   listMatches,
-  getMatch,
   getBracket,
 };

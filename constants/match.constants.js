@@ -34,6 +34,51 @@ const MATCH_PERIOD = Object.freeze({
   FINISHED: 8,
 });
 
+// Periods in which the ball is in play (events get a running minute)
+const PLAYING_PERIODS = Object.freeze([
+  MATCH_PERIOD.FIRST_HALF,
+  MATCH_PERIOD.SECOND_HALF,
+  MATCH_PERIOD.EXTRA_FIRST_HALF,
+  MATCH_PERIOD.EXTRA_SECOND_HALF,
+]);
+
+// Allowed clock moves; full time may go to extra time (knockouts) or straight to finished
+const PERIOD_TRANSITIONS = Object.freeze({
+  [MATCH_PERIOD.NOT_STARTED]: [MATCH_PERIOD.FIRST_HALF],
+  [MATCH_PERIOD.FIRST_HALF]: [MATCH_PERIOD.HALF_TIME],
+  [MATCH_PERIOD.HALF_TIME]: [MATCH_PERIOD.SECOND_HALF],
+  [MATCH_PERIOD.SECOND_HALF]: [MATCH_PERIOD.FULL_TIME],
+  [MATCH_PERIOD.FULL_TIME]: [MATCH_PERIOD.EXTRA_FIRST_HALF],
+  [MATCH_PERIOD.EXTRA_FIRST_HALF]: [MATCH_PERIOD.EXTRA_HALF_TIME],
+  [MATCH_PERIOD.EXTRA_HALF_TIME]: [MATCH_PERIOD.EXTRA_SECOND_HALF],
+  [MATCH_PERIOD.EXTRA_SECOND_HALF]: [MATCH_PERIOD.FINISHED],
+  [MATCH_PERIOD.FINISHED]: [],
+});
+
+const MATCH_EVENT_TYPE = Object.freeze({
+  GOAL: 1,
+  OWN_GOAL: 2,
+  YELLOW_CARD: 3,
+  RED_CARD: 4,
+  // Kick-off, half-time, full-time… (period stored on the event)
+  PERIOD: 5,
+});
+
+const CARD_NOTICE_REASON = Object.freeze({
+  RED_CARD: 1,
+  YELLOW_CARDS: 2,
+});
+
+// Match log actions (append-only audit of every scorer click)
+const MATCH_LOG_ACTION = Object.freeze({
+  PERIOD: "period",
+  EVENT_ADDED: "event_added",
+  EVENT_UNDONE: "event_undone",
+  RESULT_DECLARED: "result_declared",
+  WALKOVER: "walkover",
+  CANCELLED: "cancelled",
+});
+
 const DECIDED_BY = Object.freeze({
   REGULAR: 1,
   EXTRA_TIME: 2,
@@ -84,6 +129,11 @@ const knockoutRoundName = (teamsInRound) => {
 };
 
 module.exports = {
+  PLAYING_PERIODS,
+  PERIOD_TRANSITIONS,
+  MATCH_EVENT_TYPE,
+  CARD_NOTICE_REASON,
+  MATCH_LOG_ACTION,
   MATCH_STAGE,
   MATCH_STATUS,
   FINISHED_MATCH_STATUSES,

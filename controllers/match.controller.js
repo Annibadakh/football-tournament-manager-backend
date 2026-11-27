@@ -1,4 +1,5 @@
 const fixtureService = require("../services/fixture.service");
+const liveService = require("../services/live.service");
 const { sendSuccess } = require("../utils/apiResponse");
 const { HTTP_STATUS } = require("../constants/common.constants");
 
@@ -67,8 +68,93 @@ const getBracket = async (req, res) =>
 
 const getMatch = async (req, res) =>
   sendSuccess(res, {
-    data: await fixtureService.getMatch(req.user, params(req).matchId),
+    data: await liveService.getMatchDetail(req.user, params(req).matchId),
     message: "Match fetched",
+  });
+
+const getLive = async (req, res) =>
+  sendSuccess(res, {
+    data: await liveService.getLive(req.user, params(req).matchId, req.validated.query),
+    message: "Live state fetched",
+  });
+
+const getConsole = async (req, res) =>
+  sendSuccess(res, {
+    data: await liveService.getConsole(req.user, params(req).matchId),
+    message: "Console fetched",
+  });
+
+const changePeriod = async (req, res) =>
+  sendSuccess(res, {
+    data: await liveService.changePeriod(req.user, params(req).matchId, body(req)),
+    message: "Clock updated",
+  });
+
+const addEvent = async (req, res) => {
+  const data = await liveService.addEvent(req.user, params(req).matchId, body(req));
+  sendSuccess(res, {
+    data,
+    message: data.secondYellowRed ? "Second yellow: red card added" : "Event added",
+    status: HTTP_STATUS.CREATED,
+  });
+};
+
+const undoLastEvent = async (req, res) =>
+  sendSuccess(res, {
+    data: await liveService.undoLastEvent(req.user, params(req).matchId),
+    message: "Last event undone",
+  });
+
+const declareResult = async (req, res) =>
+  sendSuccess(res, {
+    data: await liveService.declareResult(req.user, params(req).matchId, body(req)),
+    message: "Result declared",
+  });
+
+const awardMatch = async (req, res) =>
+  sendSuccess(res, {
+    data: await liveService.awardMatch(req.user, params(req).matchId, body(req)),
+    message: body(req).type === "forfeit" ? "Forfeit recorded" : "Walkover recorded",
+  });
+
+const cancelMatch = async (req, res) =>
+  sendSuccess(res, {
+    data: await liveService.cancelMatch(req.user, params(req).matchId),
+    message: "Match cancelled",
+  });
+
+const getStandings = async (req, res) =>
+  sendSuccess(res, {
+    data: await liveService.getStandings(req.user, params(req).tournamentId),
+    message: "Standings fetched",
+  });
+
+const getLeaders = async (req, res) =>
+  sendSuccess(res, {
+    data: await liveService.getLeaders(req.user, params(req).tournamentId),
+    message: "Leaders fetched",
+  });
+
+const listCardNotices = async (req, res) =>
+  sendSuccess(res, {
+    data: await liveService.listCardNotices(
+      req.user,
+      params(req).tournamentId,
+      req.validated.query,
+    ),
+    message: "Card notices fetched",
+  });
+
+const handleCardNotice = async (req, res) =>
+  sendSuccess(res, {
+    data: await liveService.handleCardNotice(req.user, params(req).noticeId),
+    message: "Notice marked as handled",
+  });
+
+const listMyScoringMatches = async (req, res) =>
+  sendSuccess(res, {
+    data: await liveService.listMyScoringMatches(req.user),
+    message: "Matches fetched",
   });
 
 const updateMatch = async (req, res) =>
@@ -94,6 +180,19 @@ module.exports = {
   addMatch,
   getBracket,
   getMatch,
+  getLive,
+  getConsole,
+  changePeriod,
+  addEvent,
+  undoLastEvent,
+  declareResult,
+  awardMatch,
+  cancelMatch,
+  getStandings,
+  getLeaders,
+  listCardNotices,
+  handleCardNotice,
+  listMyScoringMatches,
   updateMatch,
   deleteMatch,
 };

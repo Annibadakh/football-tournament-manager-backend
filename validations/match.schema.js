@@ -1,5 +1,12 @@
 const { z } = require("zod");
-const { FIXTURE_RULES, MATCH_STAGE, MATCH_STATUS } = require("../constants/match.constants");
+const {
+  DECIDED_BY,
+  FIXTURE_RULES,
+  MATCH_EVENT_TYPE,
+  MATCH_PERIOD,
+  MATCH_STAGE,
+  MATCH_STATUS,
+} = require("../constants/match.constants");
 
 const matchIdParamSchema = z.object({ matchId: z.uuid("Invalid match id") });
 
@@ -78,7 +85,57 @@ const listMatchesQuerySchema = z.object({
   date: dateField.optional(),
 });
 
+const periodSchema = z.object({ period: z.enum(MATCH_PERIOD, { error: "Invalid period" }) });
+
+// Period markers are created by the clock, not by hand
+const SCORER_EVENT_TYPES = [
+  MATCH_EVENT_TYPE.GOAL,
+  MATCH_EVENT_TYPE.OWN_GOAL,
+  MATCH_EVENT_TYPE.YELLOW_CARD,
+  MATCH_EVENT_TYPE.RED_CARD,
+];
+
+const addEventSchema = z.object({
+  type: z
+    .number()
+    .int()
+    .refine((type) => SCORER_EVENT_TYPES.includes(type), "Choose goal, own goal or a card"),
+  teamId: z.uuid("Choose a team"),
+  playerId: z.uuid("Choose a player"),
+  assistId: z.uuid().optional(),
+  minute: z.number().int().min(0).max(200).optional(),
+});
+
+const declareResultSchema = z.object({
+  decidedBy: z.enum(DECIDED_BY).optional(),
+  winnerTeamId: z.uuid().optional(),
+  potmPlayerId: z.uuid().optional(),
+});
+
+const awardMatchSchema = z.object({
+  type: z.enum(["walkover", "forfeit"], { error: "Choose walkover or forfeit" }),
+  winnerTeamId: z.uuid("Choose the team awarded the match"),
+});
+
+const liveQuerySchema = z.object({ since: z.coerce.number().int().min(0).optional() });
+
+const noticeIdParamSchema = z.object({ noticeId: z.uuid("Invalid notice id") });
+
+const noticesQuerySchema = z.object({
+  all: z
+    .enum(["0", "1"])
+    .optional()
+    .transform((value) => value === "1"),
+});
+
 module.exports = {
+  periodSchema,
+  addEventSchema,
+  declareResultSchema,
+  awardMatchSchema,
+  liveQuerySchema,
+  noticeIdParamSchema,
+  noticesQuerySchema,
   matchIdParamSchema,
   scheduleSchema,
   drawGroupsSchema,

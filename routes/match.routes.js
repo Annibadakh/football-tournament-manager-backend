@@ -21,4 +21,39 @@ router.patch(
 );
 router.delete("/:matchId", ...signedIn, validate(match), matchController.deleteMatch);
 
+// ---------- live ----------
+router.get(
+  "/:matchId/live",
+  optionalAuthenticate,
+  validate({ ...match, query: schemas.liveQuerySchema }),
+  matchController.getLive,
+);
+router.get("/:matchId/console", ...signedIn, validate(match), matchController.getConsole);
+router.post(
+  "/:matchId/periods",
+  ...signedIn,
+  validate({ ...match, body: schemas.periodSchema }),
+  matchController.changePeriod,
+);
+router.post(
+  "/:matchId/events",
+  ...signedIn,
+  validate({ ...match, body: schemas.addEventSchema }),
+  matchController.addEvent,
+);
+router.delete("/:matchId/events/last", ...signedIn, validate(match), matchController.undoLastEvent);
+router.post(
+  "/:matchId/result",
+  ...signedIn,
+  validate({ ...match, body: schemas.declareResultSchema }),
+  matchController.declareResult,
+);
+router.post(
+  "/:matchId/walkover",
+  ...signedIn,
+  validate({ ...match, body: schemas.awardMatchSchema }),
+  matchController.awardMatch,
+);
+router.post("/:matchId/cancellation", ...signedIn, validate(match), matchController.cancelMatch);
+
 module.exports = router;

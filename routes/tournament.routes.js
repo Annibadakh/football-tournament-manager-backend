@@ -167,4 +167,23 @@ router.get(
   matchController.getBracket,
 );
 
+router.get(
+  "/:tournamentId/standings",
+  optionalAuthenticate,
+  validate(params),
+  matchController.getStandings,
+);
+router.get(
+  "/:tournamentId/leaders",
+  optionalAuthenticate,
+  validate(params),
+  matchController.getLeaders,
+);
+router.get(
+  "/:tournamentId/card-notices",
+  ...signedIn,
+  validate({ ...params, query: matchSchemas.noticesQuerySchema }),
+  matchController.listCardNotices,
+);
+
 module.exports = router;

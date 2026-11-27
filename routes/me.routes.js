@@ -2,6 +2,7 @@ const express = require("express");
 const meController = require("../controllers/me.controller");
 const tournamentController = require("../controllers/tournament.controller");
 const teamController = require("../controllers/team.controller");
+const matchController = require("../controllers/match.controller");
 const teamSchemas = require("../validations/team.schema");
 const { listTournamentsQuerySchema } = require("../validations/tournament.schema");
 const { ACCOUNT_ROLE } = require("../constants/user.constants");
@@ -42,6 +43,8 @@ router.get(
 );
 
 router.get("/teams", requireVerified, teamController.listMyTeams);
+// Matches the user can score (as a scorer or the organizer)
+router.get("/scoring", requireVerified, matchController.listMyScoringMatches);
 router.get("/invitations", requireVerified, teamController.listMyInvitations);
 router.post(
   "/invitations/:inviteId/response",
