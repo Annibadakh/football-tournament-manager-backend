@@ -44,6 +44,16 @@ module.exports = (sequelize) => {
       pointsWin: { type: DataTypes.TINYINT.UNSIGNED, allowNull: false, defaultValue: 3 },
       pointsDraw: { type: DataTypes.TINYINT.UNSIGNED, allowNull: false, defaultValue: 1 },
       pointsLoss: { type: DataTypes.TINYINT.UNSIGNED, allowNull: false, defaultValue: 0 },
+      // Null means "use the game format default"
+      halfMinutes: { type: DataTypes.TINYINT.UNSIGNED, allowNull: true },
+      extraTimeHalfMinutes: { type: DataTypes.TINYINT.UNSIGNED, allowNull: true },
+      yellowCardNoticeThreshold: {
+        type: DataTypes.TINYINT.UNSIGNED,
+        allowNull: false,
+        defaultValue: 2,
+      },
+      groupsCount: { type: DataTypes.TINYINT.UNSIGNED, allowNull: true },
+      qualifiersPerGroup: { type: DataTypes.TINYINT.UNSIGNED, allowNull: true },
       cityPlaceId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false },
       venuePlaceId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },
       venueDetails: { type: DataTypes.STRING(500), allowNull: true },

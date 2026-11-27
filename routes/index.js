@@ -2,6 +2,7 @@ const express = require("express");
 const authRoutes = require("./auth.routes");
 const healthRoutes = require("./health.routes");
 const inviteRoutes = require("./invite.routes");
+const matchRoutes = require("./match.routes");
 const meRoutes = require("./me.routes");
 const paymentRoutes = require("./payment.routes");
 const placeRoutes = require("./place.routes");
@@ -30,6 +31,7 @@ router.use("/tournaments", tournamentRoutes);
 router.use("/teams", teamRoutes);
 router.use("/players", playerRoutes);
 router.use("/payments", paymentRoutes);
+router.use("/matches", matchRoutes);
 router.get("/tournament-categories", tournamentController.listCategories);
 
 module.exports = router;

@@ -15,6 +15,7 @@ const {
 } = require("./tournamentAccess.service");
 const ApiError = require("../utils/ApiError");
 const { buildPagination, buildPaginationMeta } = require("../utils/pagination");
+const { matchSettingsOf } = require("./fixture.service");
 const {
   ADMIN_ONLY_FIELDS,
   NEAR_ME,
@@ -61,6 +62,7 @@ const presentTournament = async (tournament) => {
     minSquadSize: tournament.minSquadSize,
     maxSquadSize: tournament.maxSquadSize,
     points: { win: tournament.pointsWin, draw: tournament.pointsDraw, loss: tournament.pointsLoss },
+    matchSettings: matchSettingsOf(tournament),
     city: placeService.presentPlace(tournament.city),
     venue: placeService.presentPlace(tournament.venue),
     venueDetails: tournament.venueDetails,

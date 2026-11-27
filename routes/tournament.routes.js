@@ -1,6 +1,8 @@
 const express = require("express");
 const tournamentController = require("../controllers/tournament.controller");
+const matchController = require("../controllers/match.controller");
 const teamController = require("../controllers/team.controller");
+const matchSchemas = require("../validations/match.schema");
 const teamSchemas = require("../validations/team.schema");
 const {
   authenticate,
@@ -107,6 +109,62 @@ router.delete(
   ...signedIn,
   validate({ params: teamSchemas.staffParamsSchema }),
   teamController.removeStaff,
+);
+
+// ---------- groups & fixtures ----------
+router.get(
+  "/:tournamentId/groups",
+  optionalAuthenticate,
+  validate(params),
+  matchController.getGroups,
+);
+router.put(
+  "/:tournamentId/groups",
+  ...signedIn,
+  validate({ ...params, body: matchSchemas.setGroupsSchema }),
+  matchController.setGroups,
+);
+router.post(
+  "/:tournamentId/group-draw",
+  ...signedIn,
+  validate({ ...params, body: matchSchemas.drawGroupsSchema }),
+  matchController.drawGroups,
+);
+router.post(
+  "/:tournamentId/fixtures",
+  ...signedIn,
+  validate({ ...params, body: matchSchemas.generateFixturesSchema }),
+  matchController.generateFixtures,
+);
+router.delete(
+  "/:tournamentId/fixtures",
+  ...signedIn,
+  validate(params),
+  matchController.deleteFixtures,
+);
+router.post(
+  "/:tournamentId/schedule",
+  ...signedIn,
+  validate({ ...params, body: matchSchemas.scheduleSchema }),
+  matchController.scheduleMatches,
+);
+router.get(
+  "/:tournamentId/matches",
+  optionalAuthenticate,
+  validate({ ...params, query: matchSchemas.listMatchesQuerySchema }),
+  matchController.listMatches,
+);
+router.post(
+  "/:tournamentId/matches",
+  ...signedIn,
+  validate({ ...params, body: matchSchemas.addMatchSchema }),
+  matchController.addMatch,
+);
+router.get(
+  "/:tournamentId/bracket",
+  optionalAuthenticate,
+  validate(params),
+  matchController.getBracket,
 );
 
 module.exports = router;

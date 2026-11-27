@@ -30,4 +30,18 @@ const findViewableTournament = async (user, identifier) => {
   return tournament;
 };
 
-module.exports = { isAdmin, canManageTournament, findManageableTournament, findViewableTournament };
+// Same visibility rule as findViewableTournament, for a tournament already loaded
+const assertViewable = (user, tournament) => {
+  if (!tournament || (!isPubliclyVisible(tournament) && !canManageTournament(user, tournament))) {
+    throw ApiError.notFound("Tournament not found");
+  }
+  return tournament;
+};
+
+module.exports = {
+  isAdmin,
+  canManageTournament,
+  findManageableTournament,
+  findViewableTournament,
+  assertViewable,
+};
