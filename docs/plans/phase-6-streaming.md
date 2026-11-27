@@ -1,6 +1,6 @@
 # Phase 6: Live streaming (module plan)
 
-Status: **In progress** (decisions confirmed 2026-11-27). Part of `plans/implementation-plan.md`.
+Status: **Done** (decisions confirmed 2026-11-27). Part of `plans/implementation-plan.md`.
 Goal: organizers and media operators attach YouTube streams to a tournament (opening, ceremonies, any event) and to matches (one each); the public watches them inside Maidaan, live and as replays.
 
 ## Decisions (confirmed 2026-11-27)
@@ -42,3 +42,14 @@ Config: `YOUTUBE_OEMBED_URL` (default `https://www.youtube.com/oembed`), overrid
 
 ## Tests
 Unit: URL parser (all formats, bad links), oEmbed result mapping. E2E: permissions (organizer, media operator, scorer refused, streaming disabled refused), one stream per match, status changes, oEmbed success / embedding disabled / unreachable via a local mock. Browser: add a stream, go live, public player + fallback, phone + dark mode.
+
+## Outcome
+- **Backend**:
+  - `streams` table (unique `match_id`), `utils/youtube.parseYouTubeId` (watch, live, embed, shorts and youtu.be links, with or without https/www/m.), `youtube.service.lookupVideo` (oEmbed, 4 s timeout: title, channel, thumbnail, embedding off; private/unreachable still saves with a warning).
+  - `stream.service`: organizer, admin or active media operator, only while streaming is enabled; title falls back to the match name or the YouTube title; a match stream takes the kick-off time; manual status with start/end times; `/me/streaming`; match detail includes `stream`.
+  - Tests: 23 new unit tests (97 in total); the 32-check e2e run passes (against a local oEmbed mock). The Phase 1–5 runs pass, except one Phase 3 player-search check that misses because of name clashes between accumulated test players (not a regression).
+- **Frontend**:
+  - `StreamPlayer` (youtube-nocookie embed, "Watch on YouTube" link, thumbnail fallback when embedding is off) and `StreamThumb`.
+  - Tournament page **Live now / Streams** card (live first, then upcoming, then replays; click a tile to play), and the match page shows its stream above the scoreboard.
+  - `StreamsManager` (add/edit modal with YouTube-check warnings, Go live / End / Live again, preview, remove) in a **Streams** editor tab (only when streaming is on) and on `/dashboard/streams/:tournamentId` for media operators, who reach it from a "Tournaments you stream" dashboard card.
+  - Tests: 59 tests. Verified in Chromium with stand-ins for the YouTube player and thumbnails: media operator adds tournament, match and embedding-off streams, a bad link is rejected, go live, public Live now and fallback, the match page player, the organizer ends a stream, phone in dark mode.
